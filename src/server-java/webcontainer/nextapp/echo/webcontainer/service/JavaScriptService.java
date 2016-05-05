@@ -67,6 +67,24 @@ implements Service {
         return new JavaScriptService(id, out.toString());
     }
 
+    /**
+     * Creates JavaScript services from the specified resources
+     * @param id the <code>Service</code> id
+     * @param resourceNames the <code>CLASSPATH</code> resource name containing
+     *        the JavaScript content
+     * @param strip the javascript of comments and whitespace
+     * @param zip compress the javascript
+     * @return the created <code>JavaScriptService</code>
+     */
+    public static JavaScriptService forResources(String id, String[] resourceNames, boolean strip, boolean zip) {
+        StringBuffer out = new StringBuffer();
+        for (int i = 0; i < resourceNames.length; ++i) {
+            out.append(Resource.getResourceAsString(resourceNames[i]));
+            out.append("\n\n");
+        }
+        return new JavaScriptService(id, out.toString(), strip, zip);
+    }
+
     /** <code>Service</code> identifier. */
     private String id;
     
@@ -148,7 +166,7 @@ implements Service {
     public void service(Connection conn) 
     throws IOException {
         String userAgent = conn.getRequest().getHeader("user-agent");
-        if (!ServerConfiguration.ALLOW_IE_COMPRESSION && (userAgent == null || userAgent.indexOf("MSIE") != -1)) {
+        if (!ServerConfiguration.ALLOW_IE_COMPRESSION && (userAgent == null || userAgent.indexOf("MSIE") != -1 || gzipContent == null)) {
             // Due to behavior detailed Microsoft Knowledge Base Article Id 312496, 
             // all HTTP compression support is disabled for this browser.
             // Due to the fact that ClientProperties information is not necessarily 
@@ -157,7 +175,7 @@ implements Service {
             servicePlain(conn);
         } else {
             String acceptEncoding = conn.getRequest().getHeader("accept-encoding");
-            if (acceptEncoding != null && acceptEncoding.indexOf("gzip") != -1) {
+            if (acceptEncoding != null && acceptEncoding.indexOf("gzip") != -1 && gzipContent != null) {
                 serviceGZipCompressed(conn);
             } else {
                 servicePlain(conn);
