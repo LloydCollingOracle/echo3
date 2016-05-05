@@ -1,5 +1,7 @@
 package helloworld;
 
+import java.util.Map;
+
 import nextapp.echo.app.ApplicationInstance;
 import nextapp.echo.app.ContentPane;
 import nextapp.echo.app.Label;
@@ -13,8 +15,8 @@ public class HelloWorldApp extends ApplicationInstance {
     /**
      * @see nextapp.echo.app.ApplicationInstance#init()
      */
-    public Window init() {
-        Window window = new Window();
+    public Window init(Map parameters) {
+        Window window = new Window(this);
 
         ContentPane contentPane = new ContentPane();
         window.setContent(contentPane);

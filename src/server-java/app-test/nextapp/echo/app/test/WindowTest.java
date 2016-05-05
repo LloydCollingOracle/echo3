@@ -44,7 +44,7 @@ public class WindowTest extends TestCase {
      * Tests changing content of window.
      */
     public void testChangeContent() {
-        Window window = new Window();
+        Window window = new Window(null);
         window.setContent(new ContentPane());
         ContentPane content = new ContentPane();
         window.setContent(content);
@@ -56,7 +56,7 @@ public class WindowTest extends TestCase {
      * <code>Window</code>, tests for failure.
      */
     public void testOverload() {
-        Window window = new Window();
+        Window window = new Window(null);
         window.removeAll();
         window.add(new ContentPane());
         boolean exceptionThrown = false;
@@ -73,7 +73,7 @@ public class WindowTest extends TestCase {
      * <code>Window</code>, tests for failure.
      */
     public void testInvalidChild() {
-        Window window = new Window();
+        Window window = new Window(null);
         window.removeAll();
         boolean exceptionThrown = false;
         try {
@@ -88,7 +88,7 @@ public class WindowTest extends TestCase {
      * Tests property accessors and mutators.
      */
     public void testProperties() {
-        Window window = new Window();
+        Window window = new Window(null);
         window.setTitle("Title!!!");
         assertEquals("Title!!!", window.getTitle());
     }

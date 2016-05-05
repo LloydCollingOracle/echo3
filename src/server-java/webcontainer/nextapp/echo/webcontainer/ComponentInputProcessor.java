@@ -35,10 +35,10 @@ import java.util.Iterator;
 import java.util.Map;
 
 import nextapp.echo.app.Component;
+import nextapp.echo.app.Window;
 import nextapp.echo.app.serial.PropertyPeerFactory;
 import nextapp.echo.app.serial.SerialException;
 import nextapp.echo.app.serial.SerialPropertyPeer;
-import nextapp.echo.app.update.UpdateManager;
 import nextapp.echo.app.util.Context;
 import nextapp.echo.app.util.DomUtil;
 import nextapp.echo.app.util.Log;
@@ -152,15 +152,14 @@ implements ClientMessage.Processor {
     /**
      * @see nextapp.echo.webcontainer.ClientMessage.Processor#process(nextapp.echo.app.util.Context, org.w3c.dom.Element)
      */
-    public void process(Context context, Element dirElement) 
+    public void process(Context context, Element dirElement, String applicationWindowId) 
     throws IOException {
         parseDirElement(dirElement);
         
         UserInstance userInstance = (UserInstance) context.get(UserInstance.class);
-        userInstance.prepareApplicationInstance();
+        userInstance.prepareApplicationInstance(applicationWindowId);
         
         PropertyPeerFactory propertyPeerFactory = (PropertyPeerFactory) context.get(PropertyPeerFactory.class);
-        UpdateManager updateManager = userInstance.getApplicationInstance().getUpdateManager();
 
         Iterator updatedComponentIdIt  = getUpdatedComponentIds();
         while (updatedComponentIdIt.hasNext()) {
@@ -229,6 +228,6 @@ implements ClientMessage.Processor {
             }
         }
 
-        updateManager.processClientUpdates();
+        Window.getActive().getUpdateManager().processClientUpdates();
     }
 }

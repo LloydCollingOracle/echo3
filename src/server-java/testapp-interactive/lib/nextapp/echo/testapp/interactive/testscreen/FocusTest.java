@@ -84,7 +84,7 @@ public class FocusTest extends SplitPane {
             final int index = i;
             controlsColumn.addButton("Focus " + i, new ActionListener() {
                 public void actionPerformed(ActionEvent e) {
-                    getApplicationInstance().setFocusedComponent(focusColumn.getComponent(index));
+                    getContainingWindow().setFocusedComponent(focusColumn.getComponent(index));
                 }
             });
         }
@@ -96,7 +96,7 @@ public class FocusTest extends SplitPane {
             final int index = i;
             controlsColumn.addButton("Focus " + i, new ActionListener() {
                 public void actionPerformed(ActionEvent e) {
-                    getApplicationInstance().setFocusedComponent(focusColumn.getComponent(index));
+                    getContainingWindow().setFocusedComponent(focusColumn.getComponent(index));
                 }
             });
         }
@@ -106,7 +106,7 @@ public class FocusTest extends SplitPane {
         focusTextField = new TextField();
         controlsColumn.addButton("Focus TextField", new ActionListener(){
             public void actionPerformed(ActionEvent e) {
-                getApplicationInstance().setFocusedComponent(focusTextField);
+                getContainingWindow().setFocusedComponent(focusTextField);
             }
         });
         testColumn.add(focusTextField);
@@ -114,7 +114,7 @@ public class FocusTest extends SplitPane {
         focusTextArea = new TextArea();
         controlsColumn.addButton("Focus TextArea", new ActionListener(){
             public void actionPerformed(ActionEvent e) {
-                getApplicationInstance().setFocusedComponent(focusTextArea);
+                getContainingWindow().setFocusedComponent(focusTextArea);
             }
         });
         testColumn.add(focusTextArea);
@@ -122,7 +122,7 @@ public class FocusTest extends SplitPane {
         focusSelectField = new SelectField(new Object[]{ "One", "Two", "Three" });
         controlsColumn.addButton("Focus SelectField", new ActionListener(){
             public void actionPerformed(ActionEvent e) {
-                getApplicationInstance().setFocusedComponent(focusSelectField);
+                getContainingWindow().setFocusedComponent(focusSelectField);
             }
         });
         testColumn.add(focusSelectField);
@@ -130,7 +130,7 @@ public class FocusTest extends SplitPane {
         focusListBox = new ListBox(new Object[]{ "One", "Two", "Three" });
         controlsColumn.addButton("Focus ListBox", new ActionListener(){
             public void actionPerformed(ActionEvent e) {
-                getApplicationInstance().setFocusedComponent(focusListBox);
+                getContainingWindow().setFocusedComponent(focusListBox);
             }
         });
         testColumn.add(focusListBox);

@@ -40,6 +40,7 @@ import nextapp.echo.app.Command;
 import nextapp.echo.app.Component;
 import nextapp.echo.app.Label;
 import nextapp.echo.app.TextField;
+import nextapp.echo.app.Window;
 import nextapp.echo.app.layout.ColumnLayoutData;
 import nextapp.echo.app.update.PropertyUpdate;
 import nextapp.echo.app.update.ServerComponentUpdate;
@@ -72,8 +73,8 @@ public class UpdateManagerTest extends TestCase  {
     public void setUp() {
         columnApp = new ColumnApp();
         ApplicationInstance.setActive(columnApp);        
-        columnApp.doInit();
-        manager = columnApp.getUpdateManager();
+        columnApp.doInit(null, true, "windowId");
+        manager = columnApp.getWindow(0).getUpdateManager();
     }
     
     /**
@@ -87,7 +88,7 @@ public class UpdateManagerTest extends TestCase  {
      * Test adding children to an parent that is being added in current 
      * transaction.
      */
-    public void testAddChlidToAddedParent() {
+    public void testAddChildToAddedParent() {
         ServerComponentUpdate[] componentUpdates;
         Component[] addedChildren;
         manager.purge();
@@ -155,9 +156,9 @@ public class UpdateManagerTest extends TestCase  {
      */
     public void testApplicationPropertyUpdate() {
         manager.purge();
-        columnApp.setFocusedComponent(columnApp.getLabel());
+        columnApp.getActiveWindows()[0].setFocusedComponent(columnApp.getLabel());
         PropertyUpdate propertyUpdate = manager.getServerUpdateManager().getApplicationPropertyUpdate(
-                ApplicationInstance.FOCUSED_COMPONENT_CHANGED_PROPERTY);
+                Window.FOCUSED_COMPONENT_CHANGED_PROPERTY);
         assertNotNull(propertyUpdate);
         assertNull(propertyUpdate.getOldValue());
         assertEquals(columnApp.getLabel(), propertyUpdate.getNewValue());
@@ -171,14 +172,14 @@ public class UpdateManagerTest extends TestCase  {
      */
     public void testApplicationPropertyUpdateWithDifferentClientUpdate() {
         manager.purge();
-        manager.getClientUpdateManager().setApplicationProperty(ApplicationInstance.FOCUSED_COMPONENT_CHANGED_PROPERTY, 
+        manager.getClientUpdateManager().setApplicationProperty(Window.FOCUSED_COMPONENT_CHANGED_PROPERTY, 
                 columnApp.getColumn());
         manager.processClientUpdates();
-        assertEquals(columnApp.getColumn(), columnApp.getFocusedComponent());
+        assertEquals(columnApp.getColumn(), columnApp.getActiveWindows()[0].getFocusedComponent());
         
-        columnApp.setFocusedComponent(columnApp.getLabel());
+        columnApp.getActiveWindows()[0].setFocusedComponent(columnApp.getLabel());
         PropertyUpdate propertyUpdate = manager.getServerUpdateManager().getApplicationPropertyUpdate(
-                ApplicationInstance.FOCUSED_COMPONENT_CHANGED_PROPERTY);
+                Window.FOCUSED_COMPONENT_CHANGED_PROPERTY);
         assertNotNull(propertyUpdate);
         assertEquals(columnApp.getColumn(), propertyUpdate.getOldValue());
         assertEquals(columnApp.getLabel(), propertyUpdate.getNewValue());
@@ -191,12 +192,12 @@ public class UpdateManagerTest extends TestCase  {
      */
     public void testApplicationPropertyUpdateWithEquivalentClientUpdate() {
         manager.purge();
-        manager.getClientUpdateManager().setApplicationProperty(ApplicationInstance.FOCUSED_COMPONENT_CHANGED_PROPERTY, 
+        manager.getClientUpdateManager().setApplicationProperty(Window.FOCUSED_COMPONENT_CHANGED_PROPERTY, 
                 columnApp.getLabel());
         manager.processClientUpdates();
-        assertEquals(columnApp.getLabel(), columnApp.getFocusedComponent());
+        assertEquals(columnApp.getLabel(), columnApp.getActiveWindows()[0].getFocusedComponent());
         PropertyUpdate propertyUpdate = manager.getServerUpdateManager().getApplicationPropertyUpdate(
-                ApplicationInstance.FOCUSED_COMPONENT_CHANGED_PROPERTY);
+                Window.FOCUSED_COMPONENT_CHANGED_PROPERTY);
         assertNull(propertyUpdate);
     }
 
@@ -207,7 +208,7 @@ public class UpdateManagerTest extends TestCase  {
         Command command = new ExampleCommand();
 
         manager.purge();
-        columnApp.enqueueCommand(command);
+        columnApp.getActiveWindows()[0].enqueueCommand(command);
 
         // Test basic command queuing.
         assertEquals(1, manager.getServerUpdateManager().getCommands().length);
@@ -225,7 +226,7 @@ public class UpdateManagerTest extends TestCase  {
         assertEquals(0, manager.getServerUpdateManager().getCommands().length);
 
         manager.getServerUpdateManager().processFullRefresh();
-        columnApp.enqueueCommand(command);
+        columnApp.getActiveWindows()[0].enqueueCommand(command);
         
         // Ensure commands can be enqueued even if a full refresh is present.
         assertEquals(1, manager.getServerUpdateManager().getCommands().length);

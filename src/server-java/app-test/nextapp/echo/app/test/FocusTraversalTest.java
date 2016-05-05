@@ -38,7 +38,7 @@ public class FocusTraversalTest extends TestCase {
     public void test1() {
         ColumnApp app = new ColumnApp();
         ApplicationInstance.setActive(app);
-        app.doInit();
+        app.doInit(null, true, "windowId");
         Button a = new Button();
         a.setRenderId("a");
         app.getColumn().add(a);

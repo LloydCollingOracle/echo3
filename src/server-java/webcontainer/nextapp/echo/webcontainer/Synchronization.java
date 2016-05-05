@@ -33,6 +33,10 @@ import java.io.IOException;
 
 import javax.servlet.http.HttpServletResponse;
 
+import nextapp.echo.app.ApplicationInstance;
+import nextapp.echo.app.Command;
+import nextapp.echo.app.Window;
+import nextapp.echo.app.update.ServerUpdateManager;
 import nextapp.echo.app.util.Log;
 import nextapp.echo.webcontainer.util.XmlRequestParser.InvalidXmlException;
 
@@ -97,7 +101,7 @@ implements SynchronizationState {
     public void process() 
     throws IOException {
         try {
-            inputProcessor = new InputProcessor(this, conn);
+            inputProcessor = createInputProcessor(conn);
         } catch (InvalidXmlException ex) {
             // Invalid request made.
             Log.log("Invalid XML Received, returning 400/Bad Request.", ex);
@@ -116,26 +120,52 @@ implements SynchronizationState {
             }
 
             userInstance.setActive(true);
+            userInstance.prepareApplicationInstance(inputProcessor.getApplicationWindowId());
             try {
                 // Process client input.
                 inputProcessor.process();
+                Window.getActive().updateLastUpdateTime();
                 
                 // Manage render states.
-                if (userInstance.getUpdateManager().getServerUpdateManager().isFullRefreshRequired()) {
-                    userInstance.clearRenderStates();
+                if (Window.getActive().getUpdateManager().getServerUpdateManager().isFullRefreshRequired()) {
+                	Window.getActive().clearRenderStates();
                 } else {
-                    userInstance.purgeRenderStates();
+                	Window.getActive().purgeRenderStates();
                 }
                 
                 // Render updates.
-                OutputProcessor outputProcessor = new OutputProcessor(this, conn);
+                OutputProcessor outputProcessor = createOutputProcessor();
                 outputProcessor.process();
                 
+                Window [] ws = ApplicationInstance.getActive().getWindows();
+                for (int i = 0; i < ws.length; i++) {
+                    if (ws[i] != Window.getActive()) {
+                        ServerUpdateManager sum = ws[i].getUpdateManager().getServerUpdateManager();
+                        Command[] commands = sum.getCommands();
+                        if (!sum.isEmpty() 
+                              || (commands != null && commands.length > 0)) {
+                            ws[i].getUpdateManager().applyAsyncUpdates();
+                        }
+                    }
+                }
+
+                // if this window is closing, de-reference it so we don't leak memory
+                ApplicationInstance.getActive().removeIfClosing(Window.getActive());
+                
                 // Purge updates.
-                userInstance.getUpdateManager().purge();
+                Window.getActive().getUpdateManager().purge();
             } finally {
+            	Window.setActive(null);
                 userInstance.setActive(false);
             }
         }
+    }
+    
+    protected InputProcessor createInputProcessor(Connection conn) throws IOException {
+        return new InputProcessor(this, conn);
+    }
+    
+    protected OutputProcessor createOutputProcessor() {
+        return new OutputProcessor(this, conn);
     }
 }

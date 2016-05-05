@@ -48,6 +48,7 @@ import nextapp.echo.app.SplitPane;
 import nextapp.echo.app.Table;
 import nextapp.echo.app.TextArea;
 import nextapp.echo.app.TextField;
+import nextapp.echo.app.Window;
 import nextapp.echo.app.WindowPane;
 import nextapp.echo.app.button.ButtonGroup;
 import nextapp.echo.app.event.ActionEvent;
@@ -433,7 +434,7 @@ public class WindowPaneExamplesTest extends SplitPane {
         contentPane.add(contentColumn);
         
         WindowTestControls windowTestControls;
-        windowTestControls = new WindowTestControls("Root Level", InteractiveApp.getApp().getDefaultWindow().getContent());
+        windowTestControls = new WindowTestControls("Root Level", Window.getActive().getContent());
         controlsColumn.add(windowTestControls);
         windowTestControls = new WindowTestControls("Embedded", contentPane);
         controlsColumn.add(windowTestControls);
@@ -490,7 +491,7 @@ public class WindowPaneExamplesTest extends SplitPane {
             if (launchModals && i == 1) {
                 button.addActionListener(new ActionListener() {
                     public void actionPerformed(ActionEvent e) {
-                        getApplicationInstance().getDefaultWindow().getContent().add(createComponentSamplerModalTestWindow());
+                        getContainingWindow().getContent().add(createComponentSamplerModalTestWindow());
                     }
                 });
             }
@@ -505,7 +506,7 @@ public class WindowPaneExamplesTest extends SplitPane {
             if (launchModals && i == 1) {
                 radioButton.addActionListener(new ActionListener() {
                     public void actionPerformed(ActionEvent e) {
-                        getApplicationInstance().getDefaultWindow().getContent().add(createComponentSamplerModalTestWindow());
+                        getContainingWindow().getContent().add(createComponentSamplerModalTestWindow());
                     }
                 });
             }
@@ -518,7 +519,7 @@ public class WindowPaneExamplesTest extends SplitPane {
             if (launchModals && i == 1) {
                 checkBox.addActionListener(new ActionListener() {
                     public void actionPerformed(ActionEvent e) {
-                        getApplicationInstance().getDefaultWindow().getContent().add(createComponentSamplerModalTestWindow());
+                        getContainingWindow().getContent().add(createComponentSamplerModalTestWindow());
                     }
                 });
             }
@@ -534,7 +535,7 @@ public class WindowPaneExamplesTest extends SplitPane {
         if (launchModals) {
             table.addActionListener(new ActionListener() {
                 public void actionPerformed(ActionEvent e) {
-                    getApplicationInstance().getDefaultWindow().getContent().add(createComponentSamplerModalTestWindow());
+                    getContainingWindow().getContent().add(createComponentSamplerModalTestWindow());
                 }
             });
         }
@@ -545,7 +546,7 @@ public class WindowPaneExamplesTest extends SplitPane {
         if (launchModals) {
             textField.addActionListener(new ActionListener() {
                 public void actionPerformed(ActionEvent e) {
-                    getApplicationInstance().getDefaultWindow().getContent().add(createComponentSamplerModalTestWindow());
+                    getContainingWindow().getContent().add(createComponentSamplerModalTestWindow());
                 }
             });
         }
@@ -556,7 +557,7 @@ public class WindowPaneExamplesTest extends SplitPane {
         if (launchModals) {
             passwordField.addActionListener(new ActionListener() {
                 public void actionPerformed(ActionEvent e) {
-                    getApplicationInstance().getDefaultWindow().getContent().add(createComponentSamplerModalTestWindow());
+                    getContainingWindow().getContent().add(createComponentSamplerModalTestWindow());
                 }
             });
         }
@@ -567,7 +568,7 @@ public class WindowPaneExamplesTest extends SplitPane {
         if (launchModals) {
             textArea.addActionListener(new ActionListener() {
                 public void actionPerformed(ActionEvent e) {
-                    getApplicationInstance().getDefaultWindow().getContent().add(createComponentSamplerModalTestWindow());
+                    getContainingWindow().getContent().add(createComponentSamplerModalTestWindow());
                 }
             });
         }
@@ -577,7 +578,7 @@ public class WindowPaneExamplesTest extends SplitPane {
         if (launchModals) {
             listBox.addActionListener(new ActionListener() {
                 public void actionPerformed(ActionEvent e) {
-                    getApplicationInstance().getDefaultWindow().getContent().add(createComponentSamplerModalTestWindow());
+                    getContainingWindow().getContent().add(createComponentSamplerModalTestWindow());
                 }
             });
         }
@@ -588,7 +589,7 @@ public class WindowPaneExamplesTest extends SplitPane {
         if (launchModals) {
             listBox.addActionListener(new ActionListener() {
                 public void actionPerformed(ActionEvent e) {
-                    getApplicationInstance().getDefaultWindow().getContent().add(createComponentSamplerModalTestWindow());
+                    getContainingWindow().getContent().add(createComponentSamplerModalTestWindow());
                 }
             });
         }
@@ -598,7 +599,7 @@ public class WindowPaneExamplesTest extends SplitPane {
         if (launchModals) {
             selectField.addActionListener(new ActionListener() {
                 public void actionPerformed(ActionEvent e) {
-                    getApplicationInstance().getDefaultWindow().getContent().add(createComponentSamplerModalTestWindow());
+                    getContainingWindow().getContent().add(createComponentSamplerModalTestWindow());
                 }
             });
         }

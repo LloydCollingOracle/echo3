@@ -100,7 +100,7 @@ implements Service {
         
         Document document = null;
         // only used when a document is created from scratch
-        Element htmlElement;
+        Element htmlElement = null;
         Node headElement = null;
         Element bodyElement = null;
         Enumeration documents = null;
@@ -124,7 +124,7 @@ implements Service {
                 e.printStackTrace();
             }
 
-            Element htmlElement = document.getDocumentElement();
+            htmlElement = document.getDocumentElement();
             NodeList headElements = htmlElement.getElementsByTagName("head");
             if (headElements == null || headElements.getLength() == 0)
                 headElements = htmlElement.getElementsByTagName("HEAD");
@@ -232,6 +232,22 @@ implements Service {
                 linkElement.setAttribute("type", "text/css");
                 linkElement.setAttribute("href", userInstanceContainer.getServiceUri(styleSheetService, null));
                 headElement.appendChild(linkElement);
+                
+                Node linkTextNode = document.createTextNode(" ");
+                linkElement.appendChild(linkTextNode);
+            }
+        }
+        
+
+        styleSheetIt = servlet.getCssFileNames();
+        if (styleSheetIt != null) {
+            while (styleSheetIt.hasNext()) {
+                String styleSheetService = (String) styleSheetIt.next();
+                Element linkElement = document.createElement("link");
+                linkElement.setAttribute("rel", "StyleSheet");
+                linkElement.setAttribute("type", "text/css");
+                linkElement.setAttribute("href", styleSheetService);
+                headElement.appendChild(linkElement);
             }
         }
 
@@ -241,8 +257,14 @@ implements Service {
 	        htmlElement.appendChild(bodyElement);
         }
         
-        bodyElement.setAttribute("onload", "Echo.Boot.boot('" + userInstanceContainer.getServletUri() + "', '" + 
-                userInstanceContainer.createInitId(conn) + "', " + debug + ");");
+        String windowId = conn.getRequest().getParameter(WebContainerServlet.APPLICATION_WINDOW_ID_PARAMETER);
+        if (windowId == null) {
+        	bodyElement.setAttribute("onload", "Echo.Boot.boot('" + userInstanceContainer.getServletUri() + "', '" + 
+        		userInstanceContainer.createInitId(conn) + "', " + debug + ");");
+        } else {
+        	bodyElement.setAttribute("onload", "Echo.Boot.bootWindow('" + userInstanceContainer.getServletUri() + "', " + debug + ", '" + 
+        			conn.getRequest().getParameter(WebContainerServlet.USER_INSTANCE_ID_PARAMETER) + "', '" + windowId + "');");
+        }
         bodyElement.setAttribute("style",
                 "height:100%;width:100%;margin:0px;padding:0px;" +
                 "font-family:verdana, arial, helvetica, sans-serif;font-size:10pt");

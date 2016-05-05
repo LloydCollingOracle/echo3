@@ -25,8 +25,8 @@ implements HttpSessionActivationListener, HttpSessionBindingListener, Serializab
      * @param conn the client/server <code>Connection</code> for which the 
      *        instance is being instantiated
      */
-    public static void newInstance(Connection conn) {
-        new UserInstanceContainer(conn);
+    public static UserInstanceContainer newInstance(Connection conn) {
+        return new UserInstanceContainer(conn);
     }
     
     /**
@@ -78,7 +78,7 @@ implements HttpSessionActivationListener, HttpSessionBindingListener, Serializab
      * @param conn the client/server <code>Connection</code> for which the
      *        instance is being instantiated
      */
-    private UserInstanceContainer(Connection conn) {
+    protected UserInstanceContainer(Connection conn) {
         super();
         conn.initUserInstanceContainer(this);
         windowSpecificUserInstances = conn.getServlet().getInstanceMode() == WebContainerServlet.INSTANCE_MODE_WINDOW;
@@ -127,7 +127,7 @@ implements HttpSessionActivationListener, HttpSessionBindingListener, Serializab
      *        request identifier
      * @return the existing or created <code>UserInstance</code>
      */
-    synchronized UserInstance loadUserInstance(String clientWindowId, String initId) {
+    public synchronized UserInstance loadUserInstance(String clientWindowId, String initId) {
         if (!windowSpecificUserInstances) {
             clientWindowId = null;
         }
@@ -141,11 +141,15 @@ implements HttpSessionActivationListener, HttpSessionBindingListener, Serializab
                 uiid = null;
             }
             Map initialRequestParameterMap = (Map) initIdToInitialRequestParameterMap.remove(initId);
-            userInstance = new UserInstance(this, uiid, clientWindowId, initialRequestParameterMap); 
+            userInstance = createUserInstance(uiid, clientWindowId, initialRequestParameterMap); 
             clientWindowIdToUserInstance.put(clientWindowId, userInstance);
             idToUserInstance.put(userInstance.getId(), userInstance);
         }
         return userInstance;
+    }
+    
+    protected UserInstance createUserInstance(String uiid, String clientWindowId, Map initialRequestParameterMap) {
+        return new UserInstance(this, uiid, clientWindowId, initialRequestParameterMap);
     }
     
     /**
@@ -165,7 +169,7 @@ implements HttpSessionActivationListener, HttpSessionBindingListener, Serializab
      * 
      * @param id the <code>UserInstance</code> identifier, i.e., value which would be returned by
      *        the <code>UserInstance</code>'s <code>getId()</code> method
-     * @return the <code>UserInstnace</code>, or null if none exists
+     * @return the <code>UserInstance</code>, or null if none exists
      */
     synchronized UserInstance getUserInstanceById(String id) {
         return (UserInstance) idToUserInstance.get(id);

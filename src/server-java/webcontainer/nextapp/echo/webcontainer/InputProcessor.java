@@ -34,6 +34,8 @@ import java.io.IOException;
 import org.w3c.dom.Document;
 import org.xml.sax.SAXException;
 
+import nextapp.echo.app.ApplicationInstance;
+import nextapp.echo.app.Window;
 import nextapp.echo.app.update.ClientUpdateManager;
 import nextapp.echo.app.update.UpdateManager;
 import nextapp.echo.app.util.Context;
@@ -73,7 +75,7 @@ public class InputProcessor {
             if (specificContextClass == ClientMessage.class) {
                 return clientMessage;
             } else if (specificContextClass == ClientUpdateManager.class) {
-                return conn.getUserInstance().getApplicationInstance().getUpdateManager().getClientUpdateManager();
+                return Window.getActive().getUpdateManager().getClientUpdateManager();
             } else {
                 return super.get(specificContextClass);
             }
@@ -123,6 +125,14 @@ public class InputProcessor {
     }
     
     /**
+     * Returns the identifier for the application window this request is for
+     * @return
+     */
+    public String getApplicationWindowId() {
+    	return clientMessage.getApplicationWindowId();
+    }
+    
+    /**
      * Processes input to the application, parsing a client message provided in the <code>Connection</code>.
      * Verifies client/server are in sync, and performs full refresh if they are not.
      * Writes incoming XML message to <code>System.err</code> in the event debug flag is enabled.
@@ -130,27 +140,32 @@ public class InputProcessor {
      */
     public void process() 
     throws IOException {
-        UserInstance userInstance = conn.getUserInstance();
-        UpdateManager updateManager = userInstance.getUpdateManager();
+        ApplicationInstance appInstance = ApplicationInstance.getActive();
+        Window.setActive(appInstance.getWindow(clientMessage.getApplicationWindowId()));
+        if (Window.getActive() == null) {
+            throw new RuntimeException("Request received for unknown window: " + clientMessage.getApplicationWindowId());
+        }
+                
+        UpdateManager updateManager = Window.getActive().getUpdateManager();
         Context context = new InputContext();
         
         if (ClientMessage.TYPE_INITIALIZE.equals(clientMessage.getType())) {
             // Flag full refresh if initializing.
             updateManager.getServerUpdateManager().processFullRefresh();
-        } else if (clientMessage.getTransactionId() != userInstance.getCurrentTransactionId()) {
+        } else if (clientMessage.getTransactionId() != Window.getActive().getCurrentTransactionId()) {
             // Flag full refresh for an out of sync client.
             updateManager.getServerUpdateManager().processFullRefresh();
             this.syncState.setOutOfSync();
             if (ServerConfiguration.DEBUG_PRINT_MESSAGES_TO_CONSOLE) {
                 Log.log("Client out of sync: client id = " + clientMessage.getTransactionId() + 
-                        ", server id = " + userInstance.getCurrentTransactionId());
+                        ", server id = " + Window.getActive().getCurrentTransactionId());
             }
         }
         
         if (ServerConfiguration.DEBUG_PRINT_MESSAGES_TO_CONSOLE) {
             // Print ClientMessage to console. 
             try {
-                System.err.println("======== Request: " + userInstance.getCurrentTransactionId() + " ========");
+                System.err.println("======== Request: " + Window.getActive().getCurrentTransactionId() + " ========");
                 DomUtil.save(clientMessage.getDocument(), System.err, DomUtil.OUTPUT_PROPERTIES_INDENT);
                 System.err.println();
             } catch (SAXException ex) {

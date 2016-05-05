@@ -29,6 +29,8 @@
 
 package nextapp.echo.app.test;
 
+import java.util.Map;
+
 import nextapp.echo.app.ApplicationInstance;
 import nextapp.echo.app.Column;
 import nextapp.echo.app.ContentPane;
@@ -51,8 +53,8 @@ class ColumnApp extends ApplicationInstance {
     /**
      * @see nextapp.echo.app.ApplicationInstance#init()
      */
-    public Window init() {
-        window = new Window();
+    public Window init(Map parameters) {
+        window = new Window(this);
         contentPane = window.getContent();
         column = new Column();
         label = new Label("Label");

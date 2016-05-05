@@ -100,7 +100,7 @@ public class RandomClick {
      * programmatically clicks one.
      */
     public static void clickRandomButton() {
-        Window window = ApplicationInstance.getActive().getDefaultWindow();
+        Window window = Window.getActive();
         List buttonList = new ArrayList();
         findButtons(buttonList, window);
         AbstractButton button = (AbstractButton) buttonList.get((int) (buttonList.size() * Math.random()));

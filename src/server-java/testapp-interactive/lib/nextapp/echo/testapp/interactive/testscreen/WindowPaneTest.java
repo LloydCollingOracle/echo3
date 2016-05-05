@@ -37,6 +37,7 @@ import nextapp.echo.app.FillImageBorder;
 import nextapp.echo.app.Insets;
 import nextapp.echo.app.Label;
 import nextapp.echo.app.SplitPane;
+import nextapp.echo.app.Window;
 import nextapp.echo.app.WindowPane;
 import nextapp.echo.app.event.ActionEvent;
 import nextapp.echo.app.event.ActionListener;
@@ -545,7 +546,7 @@ public class WindowPaneTest extends SplitPane {
                 WindowPane modalWindow = new WindowPane();
                 modalWindow.setTitle("Blocking Modal WindowPane");
                 modalWindow.setModal(true);
-                InteractiveApp.getApp().getDefaultWindow().getContent().add(modalWindow);
+                Window.getActive().getContent().add(modalWindow);
             }
         });
     }

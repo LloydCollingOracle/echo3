@@ -29,6 +29,8 @@
 
 package nextapp.echo.app.test;
 
+import java.util.Map;
+
 import nextapp.echo.app.ApplicationInstance;
 import nextapp.echo.app.Column;
 import nextapp.echo.app.Component;
@@ -103,7 +105,7 @@ public class ApplicationInstanceTest extends TestCase {
         ColumnApp columnApp = new ColumnApp();
         ApplicationInstance.setActive(columnApp);
         
-        Window window = columnApp.doInit();
+        Window window = columnApp.doInit(null, true, "windowId");
         assertTrue(window.isRegistered());
         assertTrue(columnApp.getColumn().isRegistered());
         Label label = new Label();
@@ -127,7 +129,7 @@ public class ApplicationInstanceTest extends TestCase {
     public void testRegistrationLifecycle() {
         ColumnApp columnApp = new ColumnApp();
         ApplicationInstance.setActive(columnApp);
-        columnApp.doInit();
+        columnApp.doInit(null, true, "windowId");
         Column column = columnApp.getColumn();
 
         RegistrationTestComponent rtc = new RegistrationTestComponent();
@@ -161,14 +163,14 @@ public class ApplicationInstanceTest extends TestCase {
         
         ColumnApp columnApp = new ColumnApp(){
         
-            public Window init() {
-                Window window = super.init();
+            public Window init(Map parameters) {
+                Window window = super.init(parameters);
                 getColumn().add(rtc);
                 return window;
             }
         };
         ApplicationInstance.setActive(columnApp);
-        columnApp.doInit();
+        columnApp.doInit(null, true, "windowId");
 
         assertEquals(1, rtc.initCount);
         assertEquals(0, rtc.disposeCount);
@@ -183,8 +185,8 @@ public class ApplicationInstanceTest extends TestCase {
     public void testValidation() {
         final ValidatingLabel validatingLabel = new ValidatingLabel();
         ColumnApp app = new ColumnApp() {
-            public Window init() {
-                Window window = super.init();
+            public Window init(Map parameters) {
+                Window window = super.init(parameters);
                 getColumn().add(validatingLabel);
                 return window;
             }
@@ -194,7 +196,7 @@ public class ApplicationInstanceTest extends TestCase {
         
         ApplicationInstance.setActive(app);
         
-        app.doInit();
+        app.doInit(null, true, "windowId");
         
         // Test for initial validation.
         assertTrue(validatingLabel.valid);
@@ -203,7 +205,8 @@ public class ApplicationInstanceTest extends TestCase {
         assertFalse(validatingLabel.valid);
         
         // test validation after client update processing.
-        app.getUpdateManager().processClientUpdates();
+        
+        app.getWindow(0).getUpdateManager().processClientUpdates();
         assertTrue(validatingLabel.valid);
         
         ApplicationInstance.setActive(null);

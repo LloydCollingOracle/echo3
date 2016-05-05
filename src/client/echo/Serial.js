@@ -532,9 +532,9 @@ Echo.Serial.Border = Core.extend(Echo.Serial.PropertyTranslator, {
     
         /** @see Echo.Serial.PropertyTranslator#toProperty */
         toProperty: function(client, pElement) {
-    	    if (pElement.firstChild.nodeType == 3) { // Text content
-    	        return pElement.firstChild.data;
-    	    } else if (pElement.getAttribute("v")) {
+            if (pElement.firstChild.nodeType == 3) { // Text content
+                return pElement.firstChild.data;
+            } else if (pElement.getAttribute("v")) {
                 return pElement.getAttribute("v");
             } else {
                 var element = Core.Web.DOM.getChildElementByTagName(pElement, "b");
@@ -755,26 +755,26 @@ Echo.Serial.ImageReference = Core.extend(Echo.Serial.PropertyTranslator, {
         /** @see Echo.Serial.PropertyTranslator#toProperty */
         toProperty: function(client, pElement) {
             var url;
-    	    if (pElement.firstChild.nodeType == 1) {
-    	    	var iElement = pElement.firstChild;
-    	        url = iElement.firstChild.data;
-    	        if (client.decompressUrl) {
-    	            url = client.decompressUrl(url);
-    	        }
-    	        var width = iElement.getAttribute("w");
-    	        width = width ? width : null;
-    	        var height = iElement.getAttribute("h");
-    	        height = height ? height : null;
-    	        
-    	        if (width || height) {
-    	            return { url: url, width: width, height: height };
-    	        } else {
-    	            return url;
-    	        }
-    	    } else {
-    	     url = pElement.firstChild.data;
-    	    	return client.decompressUrl ? client.decompressUrl(url) : url;
-    	    }
+            if (pElement.firstChild.nodeType == 1) {
+                var iElement = pElement.firstChild;
+                url = iElement.firstChild.data;
+                if (client.decompressUrl) {
+                    url = client.decompressUrl(url);
+                }
+                var width = iElement.getAttribute("w");
+                width = width ? width : null;
+                var height = iElement.getAttribute("h");
+                height = height ? height : null;
+                
+                if (width || height) {
+                    return { url: url, width: width, height: height };
+                } else {
+                    return url;
+                }
+            } else {
+             url = pElement.firstChild.data;
+                return client.decompressUrl ? client.decompressUrl(url) : url;
+            }
         }
     },
     

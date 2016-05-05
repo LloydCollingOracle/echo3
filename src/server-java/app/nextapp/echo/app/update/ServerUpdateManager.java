@@ -39,9 +39,9 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
-import nextapp.echo.app.ApplicationInstance;
 import nextapp.echo.app.Command;
 import nextapp.echo.app.Component;
+import nextapp.echo.app.Window;
 
 /**
  * Monitors updates to component hierarchy and records deltas between 
@@ -110,9 +110,6 @@ implements Serializable {
     /** The <code>ClientUpdateManager</code> that will be used to process input from the client. */
     private ClientUpdateManager clientUpdateManager;
     
-    /** The updating <code>ApplicationInstance</code>. */
-    private ApplicationInstance applicationInstance;
-    
     /** Cache of <code>ServerComponentUpdate</code>s (returned by multiple invocations of <code>getComponentUpdates()</code>.) */
     private ServerComponentUpdate[] cachedComponentUpdates;
     
@@ -125,9 +122,8 @@ implements Serializable {
      * @param applicationInstance the relevant <code>ApplicationInstance</code>
      * @see #init(nextapp.echo.app.update.ClientUpdateManager)
      */
-    public ServerUpdateManager(ApplicationInstance applicationInstance) {
+    public ServerUpdateManager() {
         super();
-        this.applicationInstance = applicationInstance;
         applicationUpdateMap = new HashMap();
         componentUpdateMap = new HashMap();
         fullRefreshUpdate = new ServerComponentUpdate(null);
@@ -446,10 +442,10 @@ implements Serializable {
 
         fullRefreshUpdate = new ServerComponentUpdate(null);
 
-        if (applicationInstance.getDefaultWindow() != null) {
+        if (Window.getActive() != null) {
             // Default window may be null if an operation is invoked from within the
             // ApplicationInstsance.init() implementation that causes a full refresh.
-            fullRefreshUpdate.removeDescendant(applicationInstance.getDefaultWindow());
+            fullRefreshUpdate.removeDescendant(Window.getActive());
         }
 
         Iterator it = componentUpdateMap.keySet().iterator();

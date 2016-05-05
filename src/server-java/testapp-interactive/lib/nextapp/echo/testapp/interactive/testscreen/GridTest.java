@@ -621,7 +621,7 @@ public class GridTest extends SplitPane {
                 windowPane.setInsets(new Insets(10));
                 windowPane.setStyleName("Default");
                 windowPane.setDefaultCloseOperation(WindowPane.DISPOSE_ON_CLOSE);
-                InteractiveApp.getApp().getDefaultWindow().getContent().add(windowPane);
+                getContainingWindow().getContent().add(windowPane);
 
                 Grid grid0 = new Grid();
                 grid0.setBorder(new Border(1, Color.BLUE, Border.STYLE_SOLID));
@@ -650,7 +650,7 @@ public class GridTest extends SplitPane {
                 windowPane.setInsets(new Insets(10));
                 windowPane.setStyleName("Default");
                 windowPane.setDefaultCloseOperation(WindowPane.DISPOSE_ON_CLOSE);
-                InteractiveApp.getApp().getDefaultWindow().getContent().add(windowPane);
+                getContainingWindow().getContent().add(windowPane);
                 
                 GridLayoutData gld;
                 ColumnLayoutData cld;

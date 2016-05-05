@@ -27,7 +27,7 @@
  * the terms of any one of the MPL, the GPL or the LGPL.
  */
 
-package nextapp.echo.webcontainer.command;
+package nextapp.echo.app.command;
 
 import nextapp.echo.app.Command;
 import nextapp.echo.app.Extent;

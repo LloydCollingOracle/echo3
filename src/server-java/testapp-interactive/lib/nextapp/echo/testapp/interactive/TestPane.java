@@ -40,6 +40,7 @@ import nextapp.echo.app.ContentPane;
 import nextapp.echo.app.Extent;
 import nextapp.echo.app.Label;
 import nextapp.echo.app.SplitPane;
+import nextapp.echo.app.Window;
 import nextapp.echo.app.event.ActionEvent;
 import nextapp.echo.app.event.ActionListener;
 
@@ -220,6 +221,6 @@ public class TestPane extends ContentPane {
      */
     public void init() {
         super.init();
-        getApplicationInstance().setFocusedComponent(testLaunchButtonsColumn.getComponent(0));
+        Window.getActive().setFocusedComponent(testLaunchButtonsColumn.getComponent(0));
     };
 }

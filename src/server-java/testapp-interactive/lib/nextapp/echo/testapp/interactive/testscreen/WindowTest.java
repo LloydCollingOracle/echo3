@@ -51,38 +51,38 @@ public class WindowTest extends SplitPane {
 
         controlsColumn.addButton("Set window title", new ActionListener() {
             public void actionPerformed(ActionEvent e) {
-                getApplicationInstance().getDefaultWindow().setTitle(
+                getContainingWindow().setTitle(
                         "Echo Test Application " + ((int) (Math.random() * Integer.MAX_VALUE)));
             }
         });
         controlsColumn.addButton("Set Foreground", new ActionListener() {
             public void actionPerformed(ActionEvent e) {
-                getApplicationInstance().getDefaultWindow().setForeground(StyleUtil.randomColor());
+                getContainingWindow().setForeground(StyleUtil.randomColor());
             }
         });
         controlsColumn.addButton("Clear Foreground", new ActionListener() {
             public void actionPerformed(ActionEvent e) {
-                getApplicationInstance().getDefaultWindow().setForeground(null);
+                getContainingWindow().setForeground(null);
             }
         });
         controlsColumn.addButton("Set Background", new ActionListener() {
             public void actionPerformed(ActionEvent e) {
-                getApplicationInstance().getDefaultWindow().setBackground(StyleUtil.randomColor());
+                getContainingWindow().setBackground(StyleUtil.randomColor());
             }
         });
         controlsColumn.addButton("Clear Background", new ActionListener() {
             public void actionPerformed(ActionEvent e) {
-                getApplicationInstance().getDefaultWindow().setBackground(null);
+                getContainingWindow().setBackground(null);
             }
         });
         controlsColumn.addButton("Set Font", new ActionListener() {
             public void actionPerformed(ActionEvent e) {
-                getApplicationInstance().getDefaultWindow().setFont(StyleUtil.randomFont());
+                getContainingWindow().setFont(StyleUtil.randomFont());
             }
         });
         controlsColumn.addButton("Clear Font", new ActionListener() {
             public void actionPerformed(ActionEvent e) {
-                getApplicationInstance().getDefaultWindow().setFont(null);
+                getContainingWindow().setFont(null);
             }
         });
         controlsColumn.addButton("Multiple Content Changes", new ActionListener() {

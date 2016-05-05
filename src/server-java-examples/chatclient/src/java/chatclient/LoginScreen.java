@@ -38,6 +38,7 @@ import nextapp.echo.app.Label;
 import nextapp.echo.app.Row;
 import nextapp.echo.app.SplitPane;
 import nextapp.echo.app.TextField;
+import nextapp.echo.app.Window;
 import nextapp.echo.app.WindowPane;
 import nextapp.echo.app.event.ActionEvent;
 import nextapp.echo.app.event.ActionListener;
@@ -128,7 +129,7 @@ public class LoginScreen extends ContentPane {
         });
         layoutGrid.add(nameField);
         
-        ChatApp.getActive().setFocusedComponent(nameField);
+        Window.getActive().setFocusedComponent(nameField);
     }
     
     /**
@@ -138,7 +139,7 @@ public class LoginScreen extends ContentPane {
         if (!ChatApp.getApp().connect(nameField.getText())) {
             MessageDialog messageDialog = new MessageDialog(Messages.getString("LoginScreen.InvalidLogin.Title"),
                     Messages.getString("LoginScreen.InvalidLogin.Message"), MessageDialog.TYPE_ERROR, MessageDialog.CONTROLS_OK);
-            getApplicationInstance().getDefaultWindow().getContent().add(messageDialog);
+            Window.getActive().getContent().add(messageDialog);
         }
     }
 }

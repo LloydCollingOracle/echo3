@@ -99,7 +99,7 @@ implements ClientMessage.Processor {
     /**
      * @see nextapp.echo.webcontainer.ClientMessage.Processor#process(nextapp.echo.app.util.Context, org.w3c.dom.Element)
      */
-    public void process(Context context, Element dirElement) 
+    public void process(Context context, Element dirElement, String applicationWindowId) 
     throws IOException {
         ClientProperties clientProperties = new ClientProperties();
         Connection conn = WebContainerServlet.getActiveConnection();

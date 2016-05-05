@@ -61,12 +61,6 @@ Echo.RemoteClient = Core.extend(Echo.Client, {
     },
     
     /**
-     * Server user instance identifier.
-     * @type String
-     */
-    _uiid: null,
-    
-    /**
      * The base server URL.
      * @type String
      */
@@ -162,7 +156,13 @@ Echo.RemoteClient = Core.extend(Echo.Client, {
      * @param serverUrl the URL of the server
      * @param initId the initialization id, which should be provided in the initial client message
      */
-    $construct: function(serverUrl, initId) {
+    $construct: function(serverUrl, initId, appId, appWindowId) {
+    	if (appId != null) {
+            Echo.Client.windowId = appId;
+        }
+        if (appWindowId != null) {
+            Echo.Client.appWindowId = appWindowId;
+        }
         Echo.RemoteClient.init();
         Echo.Client.call(this);
 
@@ -175,7 +175,7 @@ Echo.RemoteClient = Core.extend(Echo.Client, {
         
         this._processClientEventRef = Core.method(this, this._processClientEvent);
         this._commandQueue = null;
-        this._clientMessage = new Echo.RemoteClient.ClientMessage(this, initId);
+        this._clientMessage = new Echo.RemoteClient.ClientMessage(this, initId, appWindowId);
         this._pending_events = [];
         this._asyncUpdatesHandler = new Core.Web.Scheduler.MethodRunnable(Core.method(this, this._performAsyncUpdates), 250, false);
     },
@@ -311,11 +311,8 @@ Echo.RemoteClient = Core.extend(Echo.Client, {
      * @type String
      */
     getServiceUrl: function(serviceId) {
-        if (this._uiid == null) {
-            return this._serverUrl + "?sid=" + serviceId;
-        } else {
-            return this._serverUrl + "?sid=" + serviceId + "&uiid=" + this._uiid;
-        }
+        var surl = this._serverUrl + "?sid=" + serviceId;
+        return surl + "&uiid=" + Echo.Client.windowId + "&wid=" + Echo.Client.appWindowId;
     },
 
     /**
@@ -471,9 +468,6 @@ Echo.RemoteClient = Core.extend(Echo.Client, {
             } else {
                 this._clientMessage.storeProperty(e.parent.renderId, e.propertyName, e.newValue);
             }
-            if (this._listenerList.hasListeners("serverUpdateComplete")) {
-                this._listenerList.fireEvent({type: "serverUpdateComplete"});
-            }
             if (!this._transactionInProgress) {
                 // has an asynchronous update (e.g: timer periodically set a property)
                 Core.Web.Scheduler.update(this._asyncUpdatesHandler, true);
@@ -516,6 +510,10 @@ Echo.RemoteClient = Core.extend(Echo.Client, {
         if (this._serverFocusedComponent) {
             this.application.setFocusedComponent(this._serverFocusedComponent);
         }
+        
+        if (this._listenerList.hasListeners("serverUpdateComplete")) {
+            this._listenerList.fireEvent({type: "serverUpdateComplete"});
+        }
     
         if (Echo.Client.profilingTimer) {
             Core.Debug.consoleWrite(Echo.Client.profilingTimer + " /pc:" + Echo.Render._loadedPeerCount);
@@ -555,6 +553,9 @@ Echo.RemoteClient = Core.extend(Echo.Client, {
      * @param e the HttpConnection response event
      */
     _processSyncResponse: function(e) {
+        if (Echo.Client.profilingTimer) {
+            Echo.Client.profilingTimer.mark("syn");
+        }
         // Retrieve response document.
         var responseDocument = e.source.getResponseXml();
         
@@ -572,9 +573,6 @@ Echo.RemoteClient = Core.extend(Echo.Client, {
             this.init(responseDocument);
             initMessage = true;
         }
-        
-        // Profiling Timer (Un-comment to enable, comment to disable).
-        Echo.Client.profilingTimer = new Echo.Client.Timer();
         
         // Create new ServerMessage object with response document.
         var serverMessage = new Echo.RemoteClient.ServerMessage(this, responseDocument);
@@ -651,9 +649,13 @@ Echo.RemoteClient = Core.extend(Echo.Client, {
                 this._clientMessage._renderXml(), "text/xml;charset=utf-8");
         
         // Create new client message.
-        this._clientMessage = new Echo.RemoteClient.ClientMessage(this, null);
+        this._clientMessage = new Echo.RemoteClient.ClientMessage(this, null, null);
 
         conn.addResponseListener(Core.method(this, this._processSyncResponse));
+        
+        // Profiling Timer (Un-comment to enable, comment to disable).
+        Echo.Client.profilingTimer = new Echo.Client.Timer();
+        
         conn.connect();
     }
 });
@@ -1086,16 +1088,28 @@ Echo.RemoteClient.ClientMessage = Core.extend({
      * @param {String} initId the initialization id provided to the RemoteClient constructor (if this an initialization request) 
      *        or null if it is not
      */
-    $construct: function(client, initId) {
+    $construct: function(client, initId, appWindowId) {
         this._client = client;
         this._componentIdToPropertyMap = {};
         
         this._document = Core.Web.DOM.createDocument("http://www.nextapp.com/products/echo/svrmsg/clientmessage.3.0", "cmsg");
+        // initialising a new application
         if (initId != null) {
             this._document.documentElement.setAttribute("t", "init");
             this._document.documentElement.setAttribute("w", Echo.Client.windowId);
             this._document.documentElement.setAttribute("ii", initId);
+            this._document.documentElement.setAttribute("wid", Echo.Client.appWindowId);
             this._renderClientProperties();
+        
+        // initialising a new window of an existing application
+        } else if (appWindowId != null) {
+            this._document.documentElement.setAttribute("t", "init");
+            this._document.documentElement.setAttribute("w", Echo.Client.windowId);
+            this._document.documentElement.setAttribute("wid", Echo.Client.appWindowId);
+            this._renderClientProperties();
+        } else {
+            this._document.documentElement.setAttribute("w", Echo.Client.windowId);
+            this._document.documentElement.setAttribute("wid", Echo.Client.appWindowId);
         }
     },
     

@@ -143,7 +143,7 @@ class OutputProcessor {
         document = serverMessage.getDocument();
         context = new OutputContext();
         userInstance = conn.getUserInstance();
-        serverUpdateManager = userInstance.getUpdateManager().getServerUpdateManager();
+        serverUpdateManager = Window.getActive().getUpdateManager().getServerUpdateManager();
         propertyPeerFactory = PropertySerialPeerFactory.forClassLoader(classLoader);
     }
         
@@ -154,7 +154,7 @@ class OutputProcessor {
     public void process() 
     throws IOException {
         serverMessage.setUserInstanceId(userInstance.getId());
-        serverMessage.setTransactionId(userInstance.getNextTransactionId());
+        serverMessage.setTransactionId(Window.getActive().getNextTransactionId());
         if (syncState.isOutOfSync()) {
             serverMessage.setResync();
         }
@@ -186,7 +186,7 @@ class OutputProcessor {
         if (ServerConfiguration.DEBUG_PRINT_MESSAGES_TO_CONSOLE) {
             // Print ServerMessage DOM to console. 
             try {
-                System.err.println("======== Response: " + userInstance.getCurrentTransactionId() + " ========");
+                System.err.println("======== Response: " + Window.getActive().getCurrentTransactionId() + " ========");
                 DomUtil.save(document, System.err, DomUtil.OUTPUT_PROPERTIES_INDENT);
                 System.err.println();
             } catch (SAXException ex) {
@@ -200,7 +200,7 @@ class OutputProcessor {
      * Renders asynchronous callback settings to server message.
      */
     private void renderAsyncState() {
-        if (userInstance.getApplicationInstance().hasTaskQueues()) {
+        if (Window.getActive().hasTaskQueues()) {
             serverMessage.setAttribute("async-interval", Integer.toString(userInstance.getCallbackInterval()));
             serverMessage.setAttribute("ws-enable", Boolean.toString(conn.getServlet().hasWebSocketConnectionHandler()));
         }
@@ -354,7 +354,7 @@ class OutputProcessor {
         // Special case: clear/full redraw.  Render entire component hierarchy by rendering an
         // add directive to add the Window's child ContentPane to the root.   
         // Render all properties of Window. 
-        Window window = userInstance.getApplicationInstance().getDefaultWindow();
+        Window window = Window.getActive();
         serverMessage.addDirective(ServerMessage.GROUP_ID_INIT, "CSyncIn", "cl");
         serverMessage.setAttribute("root", userInstance.getRootHtmlElementId());
         
@@ -410,9 +410,9 @@ class OutputProcessor {
             for (int j = 0; j < removedChildren.length; ++j) {
                 String renderId = removedChildren[j].getLastRenderId();
                 if (renderId != null) {
-                    renderId = userInstance.getClientRenderId(renderId);
+                    renderId = userInstance.getWindowClientRenderId(renderId, Window.getActive());
                 } else {
-                    renderId = userInstance.getClientRenderId(removedChildren[j]);
+                    renderId = userInstance.getWindowClientRenderId(removedChildren[j], Window.getActive());
                 }
                 if (removedIdSet.contains(renderId)) {
                     continue;
@@ -632,13 +632,13 @@ class OutputProcessor {
         if (c.getFocusNextId() != null || c.getFocusPreviousId() != null) {
             Element fElement = document.createElement("f");
             if (c.getFocusNextId() != null) {
-                Component focusComponent = c.getApplicationInstance().getComponentByRenderId(c.getFocusNextId());
+                Component focusComponent = c.getContainingWindow().getComponentByRenderId(c.getFocusNextId());
                 if (focusComponent != null) {
                     fElement.setAttribute("n", userInstance.getClientRenderId(focusComponent));
                 }
             }
             if (c.getFocusPreviousId() != null) {
-                Component focusComponent = c.getApplicationInstance().getComponentByRenderId(c.getFocusPreviousId());
+                Component focusComponent = c.getContainingWindow().getComponentByRenderId(c.getFocusPreviousId());
                 if (focusComponent != null) {
                     fElement.setAttribute("p", userInstance.getClientRenderId(focusComponent));
                 }
@@ -865,7 +865,7 @@ class OutputProcessor {
      * Renders the focus state of the application, if necessary.
      */
     private void renderFocus() {
-        Component focusedComponent = userInstance.getApplicationInstance().getFocusedComponent();
+        Component focusedComponent = Window.getActive().getFocusedComponent();
         if (focusedComponent != null) {
             Element focusElement = serverMessage.addDirective(ServerMessage.GROUP_ID_UPDATE, "CFocus", "focus");
             focusElement.setAttribute("i", userInstance.getClientRenderId(focusedComponent));

@@ -34,8 +34,8 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 
-import nextapp.echo.app.ApplicationInstance;
 import nextapp.echo.app.Component;
+import nextapp.echo.app.Window;
 
 /**
  * Stores inputs received from the application container and notifies
@@ -64,16 +64,16 @@ implements Serializable {
     /** The action value. */
     private Object actionValue;
     
-    /** The relevant <code>ApplicationInstance</code>. */ 
-    private ApplicationInstance applicationInstance;
+    /** The relevant <code>Window</code>. */ 
+    private Window window;
     
     /**
      * Creates a new <Code>ClientUpdateManager</code>.
      * 
      * @param applicationInstance the <code>ApplicationInstance</code> being supported
      */
-    ClientUpdateManager(ApplicationInstance applicationInstance) {
-        this.applicationInstance = applicationInstance;
+    ClientUpdateManager(Window window) {
+        this.window = window;
     }
     
     /**
@@ -111,7 +111,8 @@ implements Serializable {
         while (applicationUpdateIt.hasNext()) {
             String propertyName = (String) applicationUpdateIt.next();
             Object propertyValue = applicationUpdateMap.get(propertyName);
-            applicationInstance.processInput(propertyName, propertyValue);
+//            window.getApplicationInstance().processInput(propertyName, propertyValue);
+            window.processInput(propertyName, propertyValue);
         }
         
         // Process property updates. 

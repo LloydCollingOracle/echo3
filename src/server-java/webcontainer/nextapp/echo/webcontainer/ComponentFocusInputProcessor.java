@@ -33,6 +33,7 @@ import java.io.IOException;
 import org.w3c.dom.Element;
 
 import nextapp.echo.app.Component;
+import nextapp.echo.app.Window;
 import nextapp.echo.app.util.Context;
 import nextapp.echo.app.util.DomUtil;
 
@@ -46,12 +47,12 @@ implements ClientMessage.Processor {
     /**
      * @see nextapp.echo.webcontainer.ClientMessage.Processor#process(nextapp.echo.app.util.Context, org.w3c.dom.Element)
      */
-    public void process(Context context, Element dirElement) 
+    public void process(Context context, Element dirElement, String applicationWindowId) 
     throws IOException {
         UserInstance userInstance = (UserInstance) context.get(UserInstance.class);
         Element focusElement = DomUtil.getChildElementByTagName(dirElement, "focus");
         String componentId = focusElement.getAttribute("i");
         Component component = userInstance.getComponentByClientRenderId(componentId);
-        userInstance.getApplicationInstance().setFocusedComponent(component);
+        Window.getActive().setFocusedComponent(component);
     }
 }

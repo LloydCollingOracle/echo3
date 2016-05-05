@@ -297,6 +297,9 @@ implements RenderIdSupport, Serializable {
     /** Render id of next focus traversal component. */
     private String focusNextId;
 
+    /** The window containing this component */
+    private Window window;
+
     /**
      * Creates a new <code>Component</code>.
      */
@@ -369,8 +372,11 @@ implements RenderIdSupport, Serializable {
         
         // Flag child as registered.
         if (applicationInstance != null) {
-            c.register(applicationInstance);
+            c.register(applicationInstance, getContainingWindow());
         }
+
+        // update the child so that it has the correct window reference
+        c.setContainingWindow(getContainingWindow());
 
         // Notify PropertyChangeListeners of change.
         firePropertyChange(CHILDREN_CHANGED_PROPERTY, null, c);
@@ -514,8 +520,8 @@ implements RenderIdSupport, Serializable {
         // per-Component-instance memory requirements, i.e., it enables the 
         // PropertyChangeSupport object to only be instantiated on Components 
         // that have ProperyChangeListeners registered by a third party.
-        if (applicationInstance != null) {
-            applicationInstance.notifyComponentPropertyChange(this, propertyName, oldValue, newValue);
+        if (getContainingWindow() != null) {
+            getContainingWindow().notifyComponentPropertyChange(this, propertyName, oldValue, newValue);
         }
     }
     
@@ -1159,11 +1165,15 @@ implements RenderIdSupport, Serializable {
      */
     public final boolean isRenderVisible() {
         Component component = this;
-        while (component != null) {
+        while (component != this.getContainingWindow()) {
             if ((component.flags & FLAG_VISIBLE) == 0) {
                 return false;
             }
             component = component.parent;
+            // if our parent is null and we have not reached our window,
+            // then we've been orphaned!
+            if (component == null)
+                return false;
         }
         return true;
     }
@@ -1243,7 +1253,7 @@ implements RenderIdSupport, Serializable {
      *         remove a <code>Component</code> during an <code>init()</code>
      *         operation.
      */
-    void register(ApplicationInstance newValue) {
+    void register(ApplicationInstance newValue, Window window) {
         // Verifying 'registering' flag is not set.
         if ((flags & FLAG_REGISTERING) != 0) {
             throw new IllegalStateException(
@@ -1268,22 +1278,22 @@ implements RenderIdSupport, Serializable {
                 if (children != null) {
                     Iterator it = children.iterator();
                     while (it.hasNext()) {
-                        ((Component) it.next()).register(null); // Recursively unregister children.
+                        ((Component) it.next()).register(null, null); // Recursively unregister children.
                     }
                 }
                 
-                applicationInstance.unregisterComponent(this);
+                getContainingWindow().unregisterComponent(this);
             }
             
             applicationInstance = newValue;
             
             if (newValue != null) { // registering
-                applicationInstance.registerComponent(this);
-    
+                window.registerComponent(this);
+                
                 if (children != null) {
                     Iterator it = children.iterator();
                     while (it.hasNext()) {
-                        ((Component) it.next()).register(newValue); // Recursively register children.
+                        ((Component) it.next()).register(newValue, window); // Recursively register children.
                     }
                 }
             }
@@ -1316,7 +1326,7 @@ implements RenderIdSupport, Serializable {
         
         // Deregister child.
         if (applicationInstance != null) {
-            c.register(null);
+            c.register(null, null);
         }
         
         // Dissolve references between parent and child.
@@ -1641,7 +1651,7 @@ implements RenderIdSupport, Serializable {
      *         in its current state
      */
     public boolean verifyInput(String inputName, Object inputValue) {
-        if (applicationInstance != null && !applicationInstance.verifyModalContext(this)) {
+        if (getContainingWindow() != null && !getContainingWindow().verifyModalContext(this)) {
             return false;
         }
         return isVisible() && isEnabled();
@@ -1685,5 +1695,18 @@ implements RenderIdSupport, Serializable {
 
     public void setComplexProperty(String propertyName, boolean isComplex) {
         localStyle.setComplexProperty(propertyName, isComplex);
+    }
+    
+    public Window getContainingWindow() {
+        return window;
+    }
+    
+    public void setContainingWindow(Window w) {
+        this.window = w;
+        if (this.children != null) {
+            for (int i = 0; i < children.size(); i++) {
+                ((Component)children.get(i)).setContainingWindow(w);
+            }
+        }
     }
 }

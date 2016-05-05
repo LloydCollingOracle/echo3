@@ -116,7 +116,7 @@ public class TextComponentTest extends SplitPane {
         super();
         setStyleName("TestControls");
 
-        ButtonColumn controlsColumn = new ButtonColumn();
+        final ButtonColumn controlsColumn = new ButtonColumn();
         controlsColumn.setStyleName("TestControlsColumn");
         add(controlsColumn);
         
@@ -695,17 +695,17 @@ public class TextComponentTest extends SplitPane {
         });
         controlsColumn.addButton("Focus TextField", new ActionListener() {
             public void actionPerformed(ActionEvent e) {
-                getApplicationInstance().setFocusedComponent(textField);
+                getContainingWindow().setFocusedComponent(textField);
             }
         });
         controlsColumn.addButton("Focus PasswordField", new ActionListener() {
             public void actionPerformed(ActionEvent e) {
-                getApplicationInstance().setFocusedComponent(passwordField);
+                getContainingWindow().setFocusedComponent(passwordField);
             }
         });
         controlsColumn.addButton("Focus TextArea", new ActionListener() {
             public void actionPerformed(ActionEvent e) {
-                getApplicationInstance().setFocusedComponent(textArea);
+                getContainingWindow().setFocusedComponent(textArea);
             }
         });
         controlsColumn.addButton("Sync Mode: On Action", new ActionListener() {
@@ -790,7 +790,7 @@ public class TextComponentTest extends SplitPane {
                 modalWindow.setStyleName("Default");
                 modalWindow.setTitle("Blocking Modal WindowPane");
                 modalWindow.setModal(true);
-                InteractiveApp.getApp().getDefaultWindow().getContent().add(modalWindow);
+                controlsColumn.getContainingWindow().getContent().add(modalWindow);
             }
         });
     }

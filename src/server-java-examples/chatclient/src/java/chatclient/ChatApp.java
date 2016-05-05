@@ -30,6 +30,7 @@
 package chatclient;
 
 import java.io.IOException;
+import java.util.Map;
 
 import nextapp.echo.app.ApplicationInstance;
 import nextapp.echo.app.TaskQueueHandle;
@@ -113,11 +114,11 @@ public class ChatApp extends ApplicationInstance {
             if (incomingMessageQueue != null) {
                 throw new IllegalStateException();
             }
-            incomingMessageQueue = createTaskQueue();
+            incomingMessageQueue = Window.getActive().createTaskQueue();
             updatePollingInterval(true);
             lastPostTime = System.currentTimeMillis();
             
-            getDefaultWindow().setContent(new ChatScreen());
+            Window.getActive().setContent(new ChatScreen());
             return true;
         }
     }
@@ -131,11 +132,11 @@ public class ChatApp extends ApplicationInstance {
             chatSession.dispose();
             chatSession = null;
             if (incomingMessageQueue != null) {
-                removeTaskQueue(incomingMessageQueue);
+                Window.getActive().removeTaskQueue(incomingMessageQueue);
                 incomingMessageQueue = null;
             }
             logoutWarningDialog = null;
-            getDefaultWindow().setContent(new LoginScreen());
+            Window.getActive().setContent(new LoginScreen());
         } catch (IOException ex) {
             throw new RuntimeException(ex);
         }
@@ -175,8 +176,8 @@ public class ChatApp extends ApplicationInstance {
         // Poll server and determine if any new messages have been posted.
         if (pollServer()) {
             // Add new messages to ChatScreen.
-            final ChatScreen chatScreen = (ChatScreen) getDefaultWindow().getContent();
-            enqueueTask(incomingMessageQueue, new Runnable(){
+            final ChatScreen chatScreen = (ChatScreen) Window.getActive().getContent();
+            Window.getActive().enqueueTask(incomingMessageQueue, new Runnable(){
                 public void run() {
                     chatScreen.updateMessageList();
                     updatePollingInterval(true);
@@ -187,7 +188,7 @@ public class ChatApp extends ApplicationInstance {
         // Determine if the polling interval should be updated, and if 
         // necessary, queue a task to update it.
         if (pollingInterval != calculatePollingInterval()) {
-            enqueueTask(incomingMessageQueue, new Runnable() {
+            Window.getActive().enqueueTask(incomingMessageQueue, new Runnable() {
                 public void run() {
                     updatePollingInterval(false);
                 }
@@ -197,7 +198,7 @@ public class ChatApp extends ApplicationInstance {
         if (System.currentTimeMillis() - lastPostTime > POST_INTERVAL_AUTO_LOGOUT) {
             // If the user has not posted any messages in a period of
             // time, automatically log the user out.
-            enqueueTask(incomingMessageQueue, new Runnable() {
+            Window.getActive().enqueueTask(incomingMessageQueue, new Runnable() {
                 public void run() {
                     disconnect();
                 }
@@ -206,13 +207,13 @@ public class ChatApp extends ApplicationInstance {
             // If the user has not posted any messages in a period of
             // time, raise a dialog box to warn him/her that s/he may
             // soon be automatically logged out.
-            enqueueTask(incomingMessageQueue, new Runnable() {
+            Window.getActive().enqueueTask(incomingMessageQueue, new Runnable() {
                 public void run() {
                     if (logoutWarningDialog == null) {
                         logoutWarningDialog = new MessageDialog(Messages.getString("AutoLogoutWarningDialog.Title"),
                                 Messages.getString("AutoLogoutWarningDialog.Message"), MessageDialog.TYPE_CONFIRM, 
                                 MessageDialog.CONTROLS_OK);
-                        getDefaultWindow().getContent().add(logoutWarningDialog);
+                        Window.getActive().getContent().add(logoutWarningDialog);
                         logoutWarningDialog.addActionListener(new ActionListener() {
                         
                             /**
@@ -230,15 +231,15 @@ public class ChatApp extends ApplicationInstance {
             });
         }
         
-        return super.hasQueuedTasks();
+        return Window.getActive().hasQueuedTasks();
     }
     
     /**
      * @see nextapp.echo.app.ApplicationInstance#init()
      */
-    public Window init() {
+    public Window init(Map parameters) {
         setStyleSheet(Styles.DEFAULT_STYLE_SHEET);
-        Window window = new Window();
+        Window window = new Window(this);
         window.setTitle(Messages.getString("Application.Title.Window"));
         window.setContent(new LoginScreen());
         return window;

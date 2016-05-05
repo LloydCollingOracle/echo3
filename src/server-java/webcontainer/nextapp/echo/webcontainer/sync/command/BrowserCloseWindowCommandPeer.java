@@ -27,46 +27,49 @@
  * the terms of any one of the MPL, the GPL or the LGPL.
  */
 
-package nextapp.echo.app.test;
+package nextapp.echo.webcontainer.sync.command;
 
-import java.util.Map;
-
-import nextapp.echo.app.ApplicationInstance;
-import nextapp.echo.app.ContentPane;
-import nextapp.echo.app.Label;
-import nextapp.echo.app.Window;
+import nextapp.echo.app.command.BrowserCloseWindowCommand;
+import nextapp.echo.app.util.Context;
+import nextapp.echo.webcontainer.AbstractCommandSynchronizePeer;
+import nextapp.echo.webcontainer.ServerMessage;
+import nextapp.echo.webcontainer.Service;
+import nextapp.echo.webcontainer.WebContainerServlet;
+import nextapp.echo.webcontainer.service.JavaScriptService;
 
 /**
- * Sample <code>ApplicationInstance</code> used by some tests.
+ * Synchronization peer for <code>BrowserCloseWindowCommand</code>.
  */
-class HelloWorldApp extends ApplicationInstance {
+public class BrowserCloseWindowCommandPeer 
+extends AbstractCommandSynchronizePeer {
     
-    public Window window;
-    public ContentPane content;
-    public Label label;
+    /** The associated client-side JavaScript module <code>Service</code>. */
+    private static final Service BROWSER_CLOSE_WINDOW_SERVICE = JavaScriptService.forResource("Echo.BrowserCloseWindow", 
+            "nextapp/echo/webcontainer/resource/RemoteClient.BrowserCloseWindow.js");
     
+    static {
+        WebContainerServlet.getServiceRegistry().add(BROWSER_CLOSE_WINDOW_SERVICE);
+    }
+
     /**
-     * @see nextapp.echo.app.ApplicationInstance#init()
+     * Default constructor.
      */
-    public Window init(Map parameters) {
-        window = new Window(this);
-        content = window.getContent();
-        label = new Label("Hello, world!");
-        content.add(label);
-        return window;
+    public BrowserCloseWindowCommandPeer() {
+        super();
     }
     
     /**
-     * Returns the "Hello, world" label.
+     * @see nextapp.echo.webcontainer.CommandSynchronizePeer#getCommandClass()
      */
-    public Label getLabel() {
-        return label;
+    public Class getCommandClass() {
+        return BrowserCloseWindowCommand.class;
     }
     
     /**
-     * Returns the window content.
+     * @see nextapp.echo.webcontainer.AbstractCommandSynchronizePeer#init(nextapp.echo.app.util.Context)
      */
-    public ContentPane getContent() {
-        return content;
+    public void init(Context context) {
+        ServerMessage serverMessage = (ServerMessage) context.get(ServerMessage.class);
+        serverMessage.addLibrary(BROWSER_CLOSE_WINDOW_SERVICE.getId());
     }
 }

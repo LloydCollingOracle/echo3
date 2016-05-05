@@ -77,7 +77,7 @@ Echo.RemoteClient.CommandExec.BrowserOpenWindow = Core.extend(Echo.RemoteClient.
      },
      
      $load: function() {
-        Echo.RemoteClient.CommandExecProcessor.registerPeer("nextapp.echo.webcontainer.command.BrowserOpenWindowCommand", this);
+        Echo.RemoteClient.CommandExecProcessor.registerPeer("nextapp.echo.app.command.BrowserOpenWindowCommand", this);
      }
 });
 

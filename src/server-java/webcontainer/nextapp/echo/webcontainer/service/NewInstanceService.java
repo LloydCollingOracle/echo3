@@ -31,8 +31,10 @@ package nextapp.echo.webcontainer.service;
 
 import java.io.IOException;
 
+import nextapp.echo.app.ApplicationInstance;
 import nextapp.echo.webcontainer.Connection;
 import nextapp.echo.webcontainer.Service;
+import nextapp.echo.webcontainer.UserInstance;
 import nextapp.echo.webcontainer.UserInstanceContainer;
 import nextapp.echo.webcontainer.WebContainerServlet;
 

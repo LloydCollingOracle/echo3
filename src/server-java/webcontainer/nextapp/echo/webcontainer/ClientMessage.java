@@ -61,7 +61,7 @@ public class ClientMessage {
          * @param dirElement the <code>&lt;dir&gt;</code> (directive) element
          * @throws IOException if the directive contains invalid information
          */
-        public void process(Context context, Element dirElement)
+        public void process(Context context, Element dirElement, String applicationWindowId)
         throws IOException ;
     }
 
@@ -96,6 +96,11 @@ public class ClientMessage {
     /** Unique client-generated window identifier. */
     private String windowId;
     
+    /**
+     * Unique identifier for the window in the application
+     */
+    private String appWindowId;
+    
     /** The sequential transaction identifier, used for determining if the client has the current application state. */
     private int transactionId;
     
@@ -122,6 +127,7 @@ public class ClientMessage {
         initId = cmsg.hasAttribute("ii") ? cmsg.getAttribute("ii") : null;
         transactionId = Integer.parseInt(cmsg.getAttribute("i"));
         windowId = cmsg.hasAttribute("w") ? cmsg.getAttribute("w") : null;
+        appWindowId = cmsg.hasAttribute("wid") ? cmsg.getAttribute("wid") : null;
     }
     
     /**
@@ -153,12 +159,12 @@ public class ClientMessage {
     }
     
     /**
-     * Returns the client-generated unique window identifier, used to differentiate between multiple browser windows.
+     * Returns the identifier of the Application Window this message applies to.
      * 
      * @return the identifier
      */
-    public String getWindowId() {
-        return windowId;
+    public String getApplicationWindowId() {
+        return appWindowId;
     }
     
     /**
@@ -168,6 +174,15 @@ public class ClientMessage {
      */
     public String getType() {
         return type;
+    }
+    
+    /**
+     * Returns the client-generated unique window identifier, used to differentiate between multiple browser windows.
+     * 
+     * @return the user instance id
+     */
+    public String getWindowId() {
+        return windowId;
     }
     
     /**
@@ -191,7 +206,7 @@ public class ClientMessage {
 
             try {
                 Processor processor = (Processor) processorClass.newInstance();
-                processor.process(context, dirElements[i]);
+                processor.process(context, dirElements[i], getApplicationWindowId());
             } catch (InstantiationException ex) {
                 throw new SynchronizationException("Cannot instantiate process class: " + processorClass.getName(), ex);
             } catch (IllegalAccessException ex) {

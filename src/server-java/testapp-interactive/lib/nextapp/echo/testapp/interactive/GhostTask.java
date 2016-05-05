@@ -32,6 +32,7 @@ package nextapp.echo.testapp.interactive;
 import java.io.Serializable;
 
 import nextapp.echo.app.TaskQueueHandle;
+import nextapp.echo.app.Window;
 
 import nextapp.echo.app.Button;
 
@@ -64,13 +65,13 @@ public class GhostTask implements Serializable {
             if (countOnly) {
                 ++iteration;
                 app.setGhostIterationWindowTitle(iteration);
-                app.enqueueTask(taskQueue, this);
+                Window.getActive().enqueueTask(taskQueue, this);
             } else {
                 for (int i = 0; i < clicksPerIteration; ++i) {
                     if (script == null) {
                         RandomClick.clickRandomButton();
                     } else {
-                        Button button = (Button) app.getDefaultWindow().getComponent(script[scriptIndex]);
+                        Button button = (Button) Window.getActive().getComponent(script[scriptIndex]);
                         button.doAction();
                         ++scriptIndex;
                         if (scriptIndex >= script.length) {
@@ -93,7 +94,7 @@ public class GhostTask implements Serializable {
                 } else if (indefiniteAllowed) {
                     ++iteration;
                     app.setGhostIterationWindowTitle(iteration);
-                    app.enqueueTask(taskQueue, this);
+                    Window.getActive().enqueueTask(taskQueue, this);
                 }
             }
         }
@@ -167,6 +168,6 @@ public class GhostTask implements Serializable {
         if (runTime != -1) {
             stopTime = System.currentTimeMillis() + runTime;
         }
-        app.enqueueTask(taskQueue, task);
+        Window.getActive().enqueueTask(taskQueue, task);
     }
 }

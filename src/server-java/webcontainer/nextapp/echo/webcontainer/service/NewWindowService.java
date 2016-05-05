@@ -32,52 +32,35 @@ package nextapp.echo.webcontainer.service;
 
 import java.io.IOException;
 
-import nextapp.echo.app.ApplicationInstance;
 import nextapp.echo.app.Window;
 import nextapp.echo.webcontainer.Connection;
-import nextapp.echo.webcontainer.ContentType;
 import nextapp.echo.webcontainer.Service;
-import nextapp.echo.webcontainer.UserInstance;
-import nextapp.echo.webcontainer.UserInstanceContainer;
 import nextapp.echo.webcontainer.WebContainerServlet;
 
+
 /**
- * Abstract base service for handling server poll requests to determine if any
- * asynchronous operations affecting a <code>UserInstance</code> have been
- * performed since the last server interaction, such that the client might
- * resynchronize with the server.
- * <p>
- * An instance of this service must be registered with the 
- * <code>ServiceRegistry</code> if asynchronous polling is required.
+ * <code>Service</code> which launches a new instance of an Echo application.
  */
-public class AsyncMonitorService 
+public class NewWindowService 
 implements Service {
-    
+
     /**
      * Singleton instance.
      */
-    public static final Service INSTANCE = new AsyncMonitorService();
-
-    /**
-     * Asynchronous monitoring service identifier.
-     */
-    public static final String SERVICE_ID = "Echo.AsyncMonitor";
+    public static final NewWindowService INSTANCE = new NewWindowService();
     
     /**
-     * The request-sync attribute in async-monitor tag.
+     * Default constructor.
      */
-    public static final String REQUEST_SYNC_ATTR = "request-sync";
-    
-    /**
-     * Private constructor: use singleton <code>INSTANCE</code>.
-     */
-    private AsyncMonitorService() { }
+    private NewWindowService() {
+        super();
+    }
     
     /**
      * @see Service#getId()
      */
     public String getId() {
-        return SERVICE_ID;
+        return WebContainerServlet.SERVICE_ID_NEW_WINDOW;
     }
     
     /**
@@ -90,22 +73,24 @@ implements Service {
     /**
      * @see Service#service(nextapp.echo.webcontainer.Connection)
      */
-    public void service(Connection conn) throws IOException {
-        conn.setContentType(ContentType.TEXT_XML);
+    public void service(Connection conn) 
+    throws IOException {
+        // creates the top-level window for the new browser window
         String windowId = conn.getRequest().getParameter(WebContainerServlet.APPLICATION_WINDOW_ID_PARAMETER);
         String uiid = conn.getRequest().getParameter(WebContainerServlet.USER_INSTANCE_ID_PARAMETER);
-        UserInstanceContainer uic = conn.getUserInstanceContainer();
-        UserInstance instance = uic.loadUserInstance(uiid, null);
-        ApplicationInstance app = instance.getApplicationInstance();
-        Window w = app.getWindow(windowId);
-        if (w != null) {
-            w.updateLastUpdateTime();
+        
+        Window w = null;
+        
+        if (conn.getUserInstance() != null) {
+        	w = conn.getUserInstance().getApplicationInstance().getWindow(windowId);
+        } else {
+        	w = conn.getUserInstanceContainer().loadUserInstance(uiid, null).getApplicationInstance().getWindow(windowId);
         }
-        boolean hasQueuedTasks = w!= null && w.hasQueuedTasks();
-        conn.getWriter().write("<async-monitor " + 
-        		REQUEST_SYNC_ATTR + 
-        		"=\"" + 
-        		Boolean.toString(hasQueuedTasks) + 
-        		"\"/>");
+        try {
+            Window.setActive(w);
+            WindowHtmlService.INSTANCE.service(conn);
+        } finally {
+            Window.setActive(null);
+        }
     }
 }

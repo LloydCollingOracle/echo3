@@ -70,7 +70,7 @@ public class PushTest extends Column {
                 }
                 ApplicationInstance app = getApplicationInstance();
                 if (app != null) {
-                    app.enqueueTask(taskQueue, new ProgressUpdateTask(percentComplete));
+                    getContainingWindow().enqueueTask(taskQueue, new ProgressUpdateTask(percentComplete));
                     try {
                         Thread.sleep(80);
                     } catch (InterruptedException ex) {
@@ -96,7 +96,7 @@ public class PushTest extends Column {
                 statusLabel.setText("Asynchronous operation in progress; " + percentComplete + "% complete, text field value=" + textField.getText());
             } else {
                 statusLabel.setText("Asynchronous operation complete, text field value=" + textField.getText());
-                getApplicationInstance().removeTaskQueue(taskQueue);
+                getContainingWindow().removeTaskQueue(taskQueue);
                 taskQueue = null;
             }
         }
@@ -125,7 +125,7 @@ public class PushTest extends Column {
                 if (taskQueue == null) {
                     // Only start new operation if taskQueue is null, indicating
                     // that last operation has completed.
-                    taskQueue = getApplicationInstance().createTaskQueue();
+                    taskQueue = getContainingWindow().createTaskQueue();
                     new SimulatedServerOperation().start();
                 }
             }
@@ -150,7 +150,7 @@ public class PushTest extends Column {
      */
     public void dispose() {
         if (taskQueue != null) {
-            getApplicationInstance().removeTaskQueue(taskQueue);
+            getContainingWindow().removeTaskQueue(taskQueue);
         }
         super.dispose();
     }

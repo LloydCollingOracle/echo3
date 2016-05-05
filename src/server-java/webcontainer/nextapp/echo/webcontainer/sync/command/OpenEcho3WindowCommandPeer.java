@@ -30,7 +30,8 @@
 package nextapp.echo.webcontainer.sync.command;
 
 import nextapp.echo.app.Command;
-import nextapp.echo.app.command.BrowserOpenWindowCommand;
+import nextapp.echo.app.Window;
+import nextapp.echo.app.command.OpenEcho3WindowCommand;
 import nextapp.echo.app.util.Context;
 import nextapp.echo.webcontainer.AbstractCommandSynchronizePeer;
 import nextapp.echo.webcontainer.ServerMessage;
@@ -41,12 +42,12 @@ import nextapp.echo.webcontainer.service.JavaScriptService;
 /**
  * Synchronization peer for <code>BrowserOpenWindowCommand</code>.
  */
-public class BrowserOpenWindowCommandPeer 
+public class OpenEcho3WindowCommandPeer 
 extends AbstractCommandSynchronizePeer {
     
     /** The associated client-side JavaScript module <code>Service</code>. */
-    private static final Service BROWSER_OPEN_WINDOW_SERVICE = JavaScriptService.forResource("Echo.BrowserOpenWindow", 
-            "nextapp/echo/webcontainer/resource/RemoteClient.BrowserOpenWindow.js");
+    private static final Service BROWSER_OPEN_WINDOW_SERVICE = JavaScriptService.forResource("Echo.OpenEcho3Window", 
+            "nextapp/echo/webcontainer/resource/RemoteClient.OpenEcho3Window.js");
     
     static {
         WebContainerServlet.getServiceRegistry().add(BROWSER_OPEN_WINDOW_SERVICE);
@@ -55,31 +56,23 @@ extends AbstractCommandSynchronizePeer {
     /**
      * Default constructor.
      */
-    public BrowserOpenWindowCommandPeer() {
+    public OpenEcho3WindowCommandPeer() {
         super();
         addProperty("uri", new AbstractCommandSynchronizePeer.PropertyPeer() {
             public Object getProperty(Context context, Command command) {
-                return ((BrowserOpenWindowCommand) command).getUri();
+            	Window w = ((OpenEcho3WindowCommand) command).getWindow();
+            	
+                return WebContainerServlet.getActiveConnection().getRequest().getRequestURL() 
+                    + "?sid=" 
+                    + WebContainerServlet.SERVICE_ID_NEW_WINDOW 
+                    + "&wid=" 
+                    + w.getId()
+                    + "&uiid=" + WebContainerServlet.getActiveConnection().getUserInstance().getClientWindowId();
             }
         });
         addProperty("name", new AbstractCommandSynchronizePeer.PropertyPeer() {
             public Object getProperty(Context context, Command command) {
-                return ((BrowserOpenWindowCommand) command).getName();
-            }
-        });
-        addProperty("width", new AbstractCommandSynchronizePeer.PropertyPeer() {
-            public Object getProperty(Context context, Command command) {
-                return ((BrowserOpenWindowCommand) command).getWidth();
-            }
-        });
-        addProperty("height", new AbstractCommandSynchronizePeer.PropertyPeer() {
-            public Object getProperty(Context context, Command command) {
-                return ((BrowserOpenWindowCommand) command).getHeight();
-            }
-        });
-        addProperty("flags", new AbstractCommandSynchronizePeer.PropertyPeer() {
-            public Object getProperty(Context context, Command command) {
-                return new Integer(((BrowserOpenWindowCommand) command).getFlags());
+                return ((OpenEcho3WindowCommand) command).getWindow().getId();
             }
         });
     }
@@ -88,7 +81,7 @@ extends AbstractCommandSynchronizePeer {
      * @see nextapp.echo.webcontainer.CommandSynchronizePeer#getCommandClass()
      */
     public Class getCommandClass() {
-        return BrowserOpenWindowCommand.class;
+        return OpenEcho3WindowCommand.class;
     }
     
     /**

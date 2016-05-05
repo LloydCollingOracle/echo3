@@ -46,7 +46,7 @@ public class ApplicationStyleTest extends TestCase  {
         ColumnApp app = new ColumnApp();
         ApplicationInstance.setActive(app);
         
-        app.doInit();
+        app.doInit(null, true, "windowId");
         assertTrue(app.getLabel().isRegistered());
         
         MutableStyleSheet styleSheet = new MutableStyleSheet();

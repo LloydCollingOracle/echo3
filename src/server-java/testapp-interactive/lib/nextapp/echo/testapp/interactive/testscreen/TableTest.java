@@ -93,7 +93,7 @@ public class TableTest extends SplitPane {
             }
             
             final InteractiveApp app = InteractiveApp.getApp(); 
-            handle = app.createTaskQueue();
+            handle = getContainingWindow().createTaskQueue();
             
             updateThread = new Thread() {
                 
@@ -105,7 +105,7 @@ public class TableTest extends SplitPane {
                         int[] row = data[(int) (Math.random() * data.length)];
                         row[(int) (Math.random() * data.length)] = (int) (Math.random() * 10);
                         fireTableDataChanged();
-                        app.enqueueTask(handle, new Runnable() {
+                        getContainingWindow().enqueueTask(handle, new Runnable() {
                             
                             public void run() {
                                 // Do nothing, just force UI thread/sync.
@@ -116,7 +116,7 @@ public class TableTest extends SplitPane {
                             Thread.sleep((int) (Math.random() * 1000));
                         } catch (InterruptedException ex) { }
                     }
-                    app.removeTaskQueue(handle);
+                    getContainingWindow().removeTaskQueue(handle);
                     handle = null;
                 }
             };

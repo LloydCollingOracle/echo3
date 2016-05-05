@@ -38,6 +38,7 @@ import nextapp.echo.app.Insets;
 import nextapp.echo.app.Label;
 import nextapp.echo.app.Row;
 import nextapp.echo.app.SplitPane;
+import nextapp.echo.app.Window;
 import nextapp.echo.app.WindowPane;
 import nextapp.echo.app.event.ActionEvent;
 import nextapp.echo.app.event.ActionListener;
@@ -125,6 +126,6 @@ public class WelcomePane extends ContentPane {
      */
     public void init() {
         super.init();
-        getApplicationInstance().setFocusedComponent(continueButton);
+        Window.getActive().setFocusedComponent(continueButton);
     }
 }

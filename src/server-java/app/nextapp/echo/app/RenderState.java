@@ -27,46 +27,14 @@
  * the terms of any one of the MPL, the GPL or the LGPL.
  */
 
-package nextapp.echo.app.test;
+package nextapp.echo.app;
 
-import java.util.Map;
-
-import nextapp.echo.app.ApplicationInstance;
-import nextapp.echo.app.ContentPane;
-import nextapp.echo.app.Label;
-import nextapp.echo.app.Window;
+import java.io.Serializable;
 
 /**
- * Sample <code>ApplicationInstance</code> used by some tests.
+ * Describes the last rendered state of a component on the client browser.
+ * A <code>RenderState</code> is set when rendering is complete.
+ * This is a marker interface.
  */
-class HelloWorldApp extends ApplicationInstance {
-    
-    public Window window;
-    public ContentPane content;
-    public Label label;
-    
-    /**
-     * @see nextapp.echo.app.ApplicationInstance#init()
-     */
-    public Window init(Map parameters) {
-        window = new Window(this);
-        content = window.getContent();
-        label = new Label("Hello, world!");
-        content.add(label);
-        return window;
-    }
-    
-    /**
-     * Returns the "Hello, world" label.
-     */
-    public Label getLabel() {
-        return label;
-    }
-    
-    /**
-     * Returns the window content.
-     */
-    public ContentPane getContent() {
-        return content;
-    }
-}
+public interface RenderState 
+extends Serializable { }

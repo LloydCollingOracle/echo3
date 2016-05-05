@@ -33,10 +33,10 @@ import nextapp.echo.app.Button;
 import nextapp.echo.app.Column;
 import nextapp.echo.app.Extent;
 import nextapp.echo.app.Insets;
+import nextapp.echo.app.command.BrowserOpenWindowCommand;
 import nextapp.echo.app.event.ActionEvent;
 import nextapp.echo.app.event.ActionListener;
 import nextapp.echo.app.layout.SplitPaneLayoutData;
-import nextapp.echo.webcontainer.command.BrowserOpenWindowCommand;
 import nextapp.echo.webcontainer.command.BrowserRedirectCommand;
 
 /**
@@ -57,7 +57,7 @@ public class CommandTest extends Column {
         button.setStyleName("Default");
         button.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
-                getApplicationInstance().enqueueCommand(new BrowserRedirectCommand("http://echo.nextapp.com"));
+                getContainingWindow().enqueueCommand(new BrowserRedirectCommand("http://echo.nextapp.com"));
             }
         });
         add(button);
@@ -66,7 +66,7 @@ public class CommandTest extends Column {
         button.setStyleName("Default");
         button.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
-                getApplicationInstance().enqueueCommand(new BrowserRedirectCommand("mailto:info@nextapp.com"));
+                getContainingWindow().enqueueCommand(new BrowserRedirectCommand("mailto:info@nextapp.com"));
             }
         });
         add(button);
@@ -75,7 +75,7 @@ public class CommandTest extends Column {
         button.setStyleName("Default");
         button.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
-                getApplicationInstance().enqueueCommand(
+                getContainingWindow().enqueueCommand(
                         new BrowserOpenWindowCommand("http://echo.nextapp.com", null));
             }
         });
@@ -85,7 +85,7 @@ public class CommandTest extends Column {
         button.setStyleName("Default");
         button.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
-                getApplicationInstance().enqueueCommand(
+                getContainingWindow().enqueueCommand(
                         new BrowserOpenWindowCommand("http://echo.nextapp.com", 
                         "auxwindow", new Extent(640), new Extent(240), BrowserOpenWindowCommand.FLAG_REPLACE));
             }
@@ -96,7 +96,7 @@ public class CommandTest extends Column {
         button.setStyleName("Default");
         button.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
-                getApplicationInstance().enqueueCommand(
+                getContainingWindow().enqueueCommand(
                         new BrowserOpenWindowCommand("http://echo.nextapp.com", 
                         "auxwindow", new Extent(40, Extent.PERCENT), new Extent(60, Extent.PERCENT),
                         BrowserOpenWindowCommand.FLAG_REPLACE));
@@ -107,7 +107,7 @@ public class CommandTest extends Column {
         button.setStyleName("Default");
         button.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
-                getApplicationInstance().enqueueCommand(
+                getContainingWindow().enqueueCommand(
                         new BrowserOpenWindowCommand("http://echo.nextapp.com", 
                         "auxwindow", new Extent(40, Extent.PERCENT), new Extent(60, Extent.PERCENT),
                         BrowserOpenWindowCommand.FLAG_REPLACE | BrowserOpenWindowCommand.FLAG_MENUBAR |

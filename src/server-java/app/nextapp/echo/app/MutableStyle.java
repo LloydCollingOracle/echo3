@@ -214,7 +214,7 @@ implements Style {
      * @deprecated Use {@link #getIndex(String, int)} instead.
      */
     public Object getIndexedProperty(String propertyName, int propertyIndex) {
-    	return getIndex(propertyName, propertyIndex);
+        return getIndex(propertyName, propertyIndex);
     }
     
     /**
@@ -391,7 +391,7 @@ implements Style {
      * @deprecated use {@link #setIndex(String, int, Object)} instead.
      */
     public void setIndexedProperty(String propertyName, int propertyIndex, Object propertyValue) {
-    	setIndex(propertyName, propertyIndex, propertyValue);
+        setIndex(propertyName, propertyIndex, propertyValue);
     }
    
     /**
@@ -405,7 +405,7 @@ implements Style {
      * @deprecated use {@link #set(String, Object)} instead.
      */
     public void setProperty(String propertyName, Object propertyValue) {
-    	set(propertyName, propertyValue);
+        set(propertyName, propertyValue);
     }
     
     /**

@@ -199,7 +199,7 @@ public class ListBoxTest extends SplitPane {
 
         SplitPaneLayoutData splitPaneLayoutData;
 
-        ButtonColumn controlsColumn = new ButtonColumn();
+        final ButtonColumn controlsColumn = new ButtonColumn();
         controlsColumn.setStyleName("TestControlsColumn");
         add(controlsColumn);
 
@@ -784,12 +784,12 @@ public class ListBoxTest extends SplitPane {
         });
         controlsColumn.addButton("Focus SelectField1", new ActionListener() {
             public void actionPerformed(ActionEvent e) {
-                getApplicationInstance().setFocusedComponent(selectField1);
+                getContainingWindow().setFocusedComponent(selectField1);
             }
         });
         controlsColumn.addButton("Focus SelectField2", new ActionListener() {
             public void actionPerformed(ActionEvent e) {
-                getApplicationInstance().setFocusedComponent(selectField2);
+                getContainingWindow().setFocusedComponent(selectField2);
             }
         });
         controlsColumn.addButton("Launch Modal Dialog", new ActionListener() {
@@ -798,7 +798,7 @@ public class ListBoxTest extends SplitPane {
                 modalWindow.setStyleName("Default");
                 modalWindow.setTitle("Blocking Modal WindowPane");
                 modalWindow.setModal(true);
-                InteractiveApp.getApp().getDefaultWindow().getContent().add(modalWindow);
+                controlsColumn.getContainingWindow().getContent().add(modalWindow);
             }
         });
         

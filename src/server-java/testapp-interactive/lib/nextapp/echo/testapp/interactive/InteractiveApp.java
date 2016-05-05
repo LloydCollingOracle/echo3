@@ -29,6 +29,8 @@
 
 package nextapp.echo.testapp.interactive;
 
+import java.util.Map;
+
 import nextapp.echo.app.TaskQueueHandle;
 import nextapp.echo.app.ApplicationInstance;
 import nextapp.echo.app.Window;
@@ -117,9 +119,9 @@ public class InteractiveApp extends ApplicationInstance {
     public void consoleWrite(String message) {
         if (console == null) {
             console = new ConsoleWindowPane();
-            getDefaultWindow().getContent().add(console);
+            Window.getActive().getContent().add(console);
         } else if (console.getParent() == null) {
-            getDefaultWindow().getContent().add(console);
+            Window.getActive().getContent().add(console);
         }
         console.writeMessage(message);
     }
@@ -162,12 +164,12 @@ public class InteractiveApp extends ApplicationInstance {
     /**
      * @see nextapp.echo.app.ApplicationInstance#init()
      */
-    public Window init() {
+    public Window init(Map parameters) {
         ContainerContext cc = (ContainerContext) getContextProperty(ContainerContext.CONTEXT_PROPERTY_NAME);
         clientPropertiesAvailableAtInit = cc != null && cc.getClientProperties() != null;
         
         setStyleSheet(Styles.DEFAULT_STYLE_SHEET);
-        mainWindow = new Window();
+        mainWindow = new Window(this);
         mainWindow.setTitle("NextApp Echo Test Application");
         mainWindow.setContent(new WelcomePane());
         
@@ -225,7 +227,7 @@ public class InteractiveApp extends ApplicationInstance {
         if (ghostTaskQueue != null) {
             return;
         }
-        ghostTaskQueue = createTaskQueue();
+        ghostTaskQueue = Window.getActive().createTaskQueue();
         ContainerContext containerContext = 
                 (ContainerContext) getContextProperty(ContainerContext.CONTEXT_PROPERTY_NAME);
         containerContext.setTaskQueueCallbackInterval(ghostTaskQueue, interval);
@@ -236,7 +238,7 @@ public class InteractiveApp extends ApplicationInstance {
      * Stops the currently running ghost test.
      */
     public void stopGhostTest() {
-        removeTaskQueue(ghostTaskQueue);
+        Window.getActive().removeTaskQueue(ghostTaskQueue);
         ghostTaskQueue = null;
     }
 }

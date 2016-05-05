@@ -31,7 +31,8 @@ package nextapp.echo.app.update;
 
 import java.io.Serializable;
 
-import nextapp.echo.app.ApplicationInstance;
+import nextapp.echo.app.TaskQueueHandle;
+import nextapp.echo.app.Window;
 
 /**
  * Primary interface to update management architecture.
@@ -44,7 +45,8 @@ implements Serializable {
 
     private ClientUpdateManager clientUpdateManager;
     private ServerUpdateManager serverUpdateManager;
-    private ApplicationInstance applicationInstance;
+    private Window window;
+    private TaskQueueHandle asyncUpdateQueue;
     
     /**
      * Creates a new <code>UpdateManager</code>.
@@ -54,11 +56,11 @@ implements Serializable {
      * @param applicationInstance the <code>ApplicationInstance</code> which
      *        this manager will service
      */
-    public UpdateManager(ApplicationInstance applicationInstance) {
+    public UpdateManager(Window window) {
         super();
-        this.applicationInstance = applicationInstance;
-        clientUpdateManager = new ClientUpdateManager(applicationInstance);
-        serverUpdateManager = new ServerUpdateManager(applicationInstance);
+        this.window = window;
+        clientUpdateManager = new ClientUpdateManager(window);
+        serverUpdateManager = new ServerUpdateManager();
         serverUpdateManager.init(clientUpdateManager);
     }
     
@@ -92,10 +94,10 @@ implements Serializable {
         clientUpdateManager.process();
         
         // Processed queued asynchronous tasks.
-        applicationInstance.processQueuedTasks();
+        window.processQueuedTasks();
         
         // Validate the state of the hierarchy prior to rendering.
-        applicationInstance.doValidation();
+        window.getApplicationInstance().doValidation();
     }
     
     /**
@@ -104,5 +106,32 @@ implements Serializable {
     public void purge() {
         clientUpdateManager.purge();
         serverUpdateManager.purge();
+    }
+
+    public void createAsyncUpdateQueue() {
+        if (this.asyncUpdateQueue != null)
+            return;
+        this.asyncUpdateQueue = window.createTaskQueue();
+    }
+
+    public void applyAsyncUpdates() {
+        createAsyncUpdateQueue();
+        window.enqueueTask(this.asyncUpdateQueue, new AsyncUpdateTask(window));
+    }
+    
+
+    /**
+     * A task used to send updates that have been made asynchronously
+     * to a window down to the client
+     * @author Lloyd Colling
+     *
+     */
+    public static class AsyncUpdateTask implements Runnable {
+        
+        public AsyncUpdateTask(Window w) {
+        }
+
+        public void run() {
+        }
     }
 }

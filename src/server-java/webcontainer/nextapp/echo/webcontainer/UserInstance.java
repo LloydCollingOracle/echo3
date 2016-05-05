@@ -45,6 +45,7 @@ import javax.servlet.http.HttpSession;
 import nextapp.echo.app.ApplicationInstance;
 import nextapp.echo.app.Component;
 import nextapp.echo.app.TaskQueueHandle;
+import nextapp.echo.app.Window;
 import nextapp.echo.app.update.ServerComponentUpdate;
 import nextapp.echo.app.update.UpdateManager;
 import nextapp.echo.webcontainer.service.AsyncMonitorService;
@@ -105,11 +106,6 @@ public class UserInstance implements Serializable {
     private ClientProperties clientProperties;
     
     /**
-     * Mapping between component instances and <code>RenderState</code> objects.
-     */
-    private Map componentToRenderStateMap = new HashMap();
-    
-    /**
      * <code>PropertyChangeListener</code> for supported <code>ApplicationInstance</code>.
      */
     private PropertyChangeListener applicationPropertyChangeListener = new SerializablePropertyChangeListener() {
@@ -119,7 +115,9 @@ public class UserInstance implements Serializable {
         @Override
         public void propertyChange(PropertyChangeEvent e) {
             String propertyName = e.getPropertyName();
-            if (ApplicationInstance.LAST_ENQUEUE_TASK_PROPERTY.equals(propertyName)) {                
+            // FIXME: webSocket will need to be moved from ApplicationInstance/UserInstance down to Window to 
+            // reflect that a Browser window is represented at that lower level
+            if (Window.LAST_ENQUEUE_TASK_PROPERTY.equals(propertyName)) {                
                 if (applicationWebSocket != null && applicationWebSocket.isOpen()) {
                     UserInstance.this.applicationWebSocket.sendMessage(AsyncMonitorService.REQUEST_SYNC_ATTR);
                 }
@@ -160,14 +158,6 @@ public class UserInstance implements Serializable {
      * Map of <code>TaskQueueHandle</code>s to callback intervals.
      */
     private transient Map taskQueueToCallbackIntervalMap;
-    
-    /**
-     * The current transactionId.  Used to ensure incoming ClientMessages reflect
-     * changes made by user against current server-side state of user interface.
-     * This is used to eliminate issues that could be encountered with two
-     * browser windows pointing at the same application instance.
-     */
-    private int transactionId = 0;
        
     /**
      * Creates a new <code>UserInstance</code>.
@@ -183,13 +173,6 @@ public class UserInstance implements Serializable {
         this.id = id;
         this.clientWindowId = clientWindowId;
         this.initialRequestParameterMap = initialRequestParameterMap;
-    }
-
-    /**
-     * Clears all <code>RenderState</code> information.
-     */
-    public void clearRenderStates() {
-        componentToRenderStateMap.clear();
     }
     
     /**
@@ -272,7 +255,8 @@ public class UserInstance implements Serializable {
      * @return the client-side render id
      */
     public String getClientRenderId(Component component) {
-        return getClientRenderId(component.getRenderId());
+        return getClientRenderId(component.getRenderId(), component.getContainingWindow().getId());
+        
     }
     
     /**
@@ -281,9 +265,33 @@ public class UserInstance implements Serializable {
      * @param componentRenderId component render id
      * @return the client-side render id
      */
-    public String getClientRenderId(final String componentRenderId) {
-        return "C."+ componentRenderId;
+    public String getClientRenderId(final String componentRenderId, String windowId) {
+        return "C." + windowId + "." + componentRenderId;
     }
+            
+    /**
+     * Returns the client-side render id that should be used when rendering the
+     * specified <code>Component</code>.
+     * 
+     * @param component the component
+     * @param w the window the component is/was associated with
+     * @return the client-side render id
+     */
+    public String getWindowClientRenderId(Component component, Window w) {
+        return getClientRenderId(component.getRenderId(), w.getId());
+     }
+    
+	/**
+	* Returns the client-side render id that should be used when rendering the
+	* specified <code>Component</code>.
+	* 
+	* @param component the component
+	* @param w the window the component is/was associated with
+	* @return the client-side render id
+	*/
+	public String getWindowClientRenderId(String renderId, Window w) {
+		return getClientRenderId(renderId, w.getId());
+	}
     
     /**
      * Retrieves the <code>Component</code> with the specified client-side render id.
@@ -291,21 +299,25 @@ public class UserInstance implements Serializable {
      * @param clientRenderId client-side element render id, e.g., "C.42323"
      * @return the component (e.g., the component whose id is "42323")
      */
-    public Component getComponentByClientRenderId(String clientRenderId) {
-        try {
-            return applicationInstance.getComponentByRenderId(clientRenderId.substring(2));
-        } catch (IndexOutOfBoundsException ex) {
-            throw new IllegalArgumentException("Invalid component element id: " + clientRenderId);
-        }
-    }
-
-    /**
-     * Returns the current transaction id.
-     * 
-     * @return the current transaction id
-     */
-    public int getCurrentTransactionId() {
-        return transactionId;
+    public Component getComponentByClientRenderId(final String clientRenderId) {
+    	try {
+        	if (clientRenderId.split("\\.").length == 4) {
+	        	int dot = clientRenderId.indexOf(".", 2);
+	        	dot = clientRenderId.indexOf(".", dot + 1);
+	        	String windowId = clientRenderId.substring(2, dot);
+	        	String renderId = clientRenderId.substring(dot+1);
+	        	return applicationInstance.getWindow(windowId).getComponentByRenderId(renderId);
+        	} else {
+        		int dot = clientRenderId.indexOf(".", 2);
+	        	String windowId = clientRenderId.substring(2, dot);
+	        	String renderId = clientRenderId.substring(dot+1);
+	        	return applicationInstance.getWindow(windowId).getComponentByRenderId(renderId);
+        	}
+        } catch (final IndexOutOfBoundsException ex) {
+        	IllegalArgumentException iae = new IllegalArgumentException("Invalid component element id: " + clientRenderId);
+        	iae.initCause(ex);
+            throw iae;
+		}
     }
 
     /**
@@ -348,27 +360,6 @@ public class UserInstance implements Serializable {
      */
     public Map getInitialRequestParameterMap() {
         return initialRequestParameterMap;
-    }
-    
-    /**
-     * Increments the current transaction id and returns it.
-     * 
-     * @return the current transaction id, after an increment
-     */
-    public int getNextTransactionId() {
-        ++transactionId;
-        return transactionId;
-    }
-
-    /**
-     * Retrieves the <code>RenderState</code> of the specified
-     * <code>Component</code>.
-     * 
-     * @param component the component
-     * @return the rendering state
-     */
-    public RenderState getRenderState(Component component) {
-        return (RenderState) componentToRenderStateMap.get(component);
     }
 
     /**
@@ -445,19 +436,6 @@ public class UserInstance implements Serializable {
         }
     }
     
-   /**
-     * Convenience method to retrieve the application's 
-     * <code>UpdateManager</code>, which is used to synchronize
-     * client and server states.
-     * This method is equivalent to invoking
-     * <code>getApplicationInstance().getUpdateManager()</code>.
-     * 
-     * @return the <code>UpdateManager</code>
-     */
-    public UpdateManager getUpdateManager() {
-        return applicationInstance.getUpdateManager();
-    }
-    
     /**
      * Disposes of the <code>UserInstance</code>.
      */
@@ -522,48 +500,18 @@ public class UserInstance implements Serializable {
      * Prepares the <code>ApplicationInstance</code> for use, initializing the application if it has not been initialized 
      * previously.
      */
-    void prepareApplicationInstance() {
+    public void prepareApplicationInstance(String applicationWindowId) {
         if (!applicationInitialized) {
             try {
-                applicationInstance.doInit();
+                applicationInstance.doInit(
+                    WebContainerServlet.getActiveConnection().getRequest().getParameterMap(), 
+                    WebContainerServlet.getActiveConnection().getServlet().getAllowAsyncWindowUpdates(),
+                    applicationWindowId
+                );
             } finally {
                 applicationInitialized = true;
             }
         }
-    }
-    
-    /**
-     * Removes all <code>RenderState</code>s whose components are not
-     * registered.
-     */
-    public void purgeRenderStates() {
-        ServerComponentUpdate[] updates = getUpdateManager().getServerUpdateManager().getComponentUpdates();
-
-        Iterator it = componentToRenderStateMap.keySet().iterator();
-        while (it.hasNext()) {
-            Component component = (Component) it.next();
-            if (!component.isRegistered() || !component.isRenderVisible()) {
-                it.remove();
-                continue;
-            }
-
-            for (int i = 0; i < updates.length; ++i) {
-                if (updates[i].hasRemovedDescendant(component)) {
-                    it.remove();
-                    continue;
-                }
-            }
-        }
-    }
-
-    /**
-     * Removes the <code>RenderState</code> of the specified
-     * <code>Component</code>.
-     * 
-     * @param component the component
-     */
-    public void removeRenderState(Component component) {
-        componentToRenderStateMap.remove(component);
     }
 
     /**
@@ -598,17 +546,6 @@ public class UserInstance implements Serializable {
      */
     void setClientProperties(ClientProperties clientProperties) {
         this.clientProperties = clientProperties;
-    }
-
-    /**
-     * Sets the <code>RenderState</code> of the specified 
-     * <code>Component</code>.
-     * 
-     * @param component the component
-     * @param renderState the render state
-     */
-    public void setRenderState(Component component, RenderState renderState) {
-        componentToRenderStateMap.put(component, renderState);
     }
 
     /**

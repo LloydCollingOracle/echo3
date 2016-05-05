@@ -50,7 +50,13 @@ Echo.Client = Core.extend({
          * A client-generated unique persistent identifier for the window, stored in window.name.
          * @type String
          */
-        windowId: null
+        windowId: null,
+        
+        /**
+         * A client-generated unique persistent identifier for the application window, stored in window.name.
+         * @type String
+         */
+        appWindowId: null
     },
     
     $load: function() {
@@ -63,6 +69,15 @@ Echo.Client = Core.extend({
         if (!this.windowId) {
             this.windowId = new Date().getTime().toString(16) + "." + parseInt(Math.random() * 0x100000000, 10).toString(16);
             window.name = (window.name || "") + ";EchoWindowId=" + this.windowId + ";";
+        }
+        
+        
+        re = /EchoAppWindowId=([0-9a-f]*\.[0-9a-f]*);/i;
+        match = re.exec(window.name || "");
+        this.appWindowId = match && match[1];
+        if (!this.appWindowId) {
+            this.appWindowId = new Date().getTime().toString(16) + "." + parseInt(Math.random() * 0x100000000, 10).toString(16);
+            window.name = (window.name || "") + ";EchoAppWindowId=" + this.appWindowId + ";";
         }
     },
     
@@ -487,6 +502,9 @@ Echo.Client = Core.extend({
         }
         this._failed = true;
         var element = this.domainElement;
+        if (element == null)
+            element = document.body;
+        
         try {
             // Attempt to dispose.
             this.dispose();

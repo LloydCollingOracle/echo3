@@ -44,6 +44,7 @@ import nextapp.echo.app.Label;
 import nextapp.echo.app.Column;
 import nextapp.echo.app.StyleSheet;
 import nextapp.echo.app.TextArea;
+import nextapp.echo.app.Window;
 import nextapp.echo.app.WindowPane;
 import nextapp.echo.app.serial.SerialException;
 import nextapp.echo.app.serial.StyleSheetLoader;
@@ -164,7 +165,7 @@ public class StyleSheetTest extends Column {
             windowPane.setStyleName("Default");
             windowPane.setTitle("Exception Setting Custom Style");
             windowPane.add(new Label(w.toString()));
-            InteractiveApp.getApp().getDefaultWindow().getContent().add(windowPane);
+            Window.getActive().getContent().add(windowPane);
         } catch (IOException ex) {
             throw new RuntimeException(ex);
         }

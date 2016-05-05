@@ -38,6 +38,7 @@ import nextapp.echo.app.FloatingPane;
 import nextapp.echo.app.Insets;
 import nextapp.echo.app.Label;
 import nextapp.echo.app.SplitPane;
+import nextapp.echo.app.Window;
 import nextapp.echo.app.WindowPane;
 import nextapp.echo.app.event.ActionEvent;
 import nextapp.echo.app.event.ActionListener;
@@ -56,7 +57,7 @@ public class ContentPaneTest extends SplitPane {
         super();
         setStyleName("TestControls");
         
-        final ContentPane rootContentPane = InteractiveApp.getApp().getDefaultWindow().getContent();
+        final ContentPane rootContentPane = Window.getActive().getContent();
         
         ButtonColumn controlsColumn = new ButtonColumn();
         controlsColumn.setStyleName("TestControlsColumn");

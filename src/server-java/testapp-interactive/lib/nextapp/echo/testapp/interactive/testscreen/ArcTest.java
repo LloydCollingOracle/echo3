@@ -229,7 +229,7 @@ public class ArcTest extends SplitPane {
 
         SplitPaneLayoutData splitPaneLayoutData;
 
-        ButtonColumn controlsColumn = new ButtonColumn();
+        final ButtonColumn controlsColumn = new ButtonColumn();
         controlsColumn.setStyleName("TestControlsColumn");
         add(controlsColumn);
         
@@ -281,7 +281,7 @@ public class ArcTest extends SplitPane {
                 modalWindow.setStyleName("Default");
                 modalWindow.setTitle("Blocking Modal WindowPane");
                 modalWindow.setModal(true);
-                InteractiveApp.getApp().getDefaultWindow().getContent().add(modalWindow);
+                controlsColumn.getContainingWindow().getContent().add(modalWindow);
             }
         });
 

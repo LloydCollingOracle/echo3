@@ -37,6 +37,7 @@ import nextapp.echo.app.Label;
 import nextapp.echo.app.Row;
 import nextapp.echo.app.SplitPane;
 import nextapp.echo.app.TextArea;
+import nextapp.echo.app.Window;
 import nextapp.echo.app.event.ActionEvent;
 import nextapp.echo.app.event.ActionListener;
 
@@ -111,7 +112,7 @@ public class ChatScreen extends ContentPane {
         mainSplitPane.add(messagePane);
         
         ChatApp app = ChatApp.getApp();
-        app.setFocusedComponent(postField);
+        Window.getActive().setFocusedComponent(postField);
     }
     
     /**
@@ -130,7 +131,7 @@ public class ChatScreen extends ContentPane {
             app.postMessage(postField.getText());
         }
         postField.setText("");
-        app.setFocusedComponent(postField);
+        Window.getActive().setFocusedComponent(postField);
         messagePane.update();
     }
 }

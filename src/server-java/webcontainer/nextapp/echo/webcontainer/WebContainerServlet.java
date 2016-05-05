@@ -48,6 +48,7 @@ import nextapp.echo.app.util.Uid;
 import nextapp.echo.webcontainer.service.AsyncMonitorService;
 import nextapp.echo.webcontainer.service.BootService;
 import nextapp.echo.webcontainer.service.NewInstanceService;
+import nextapp.echo.webcontainer.service.NewWindowService;
 import nextapp.echo.webcontainer.service.ResourceService;
 import nextapp.echo.webcontainer.service.SessionExpiredService;
 import nextapp.echo.webcontainer.service.StaticTextService;
@@ -101,6 +102,9 @@ public abstract class WebContainerServlet extends HttpServlet {
     /** Request parameter identifying requested <code>UserInstance</code>. */
     public static final String USER_INSTANCE_ID_PARAMETER = "uiid";
     
+    /** Request parameter identifying requested Application Window. */
+    public static final String APPLICATION_WINDOW_ID_PARAMETER = "wid";
+    
     /**
      * <code>Service</code> identifier of the 'default' service. 
      * The 'default' service is rendered when a client makes a request
@@ -117,6 +121,13 @@ public abstract class WebContainerServlet extends HttpServlet {
      * without a service identifier and a session DOES NOT exist.
      */
     public static final String SERVICE_ID_NEW_INSTANCE = "Echo.NewInstance";
+    
+    /**
+     * <code>Service</code> identifier of the 'new window' service. 
+     * The 'new window' service is rendered when a client makes a request
+     * with the service identifier <code>Echo.NewWindow</code> and a session DOES exist..
+     */
+    public static final String SERVICE_ID_NEW_WINDOW = "Echo.NewWindow";
     
     /**
      * <code>Service</code> identifier of the 'session expired' service.
@@ -243,6 +254,8 @@ public abstract class WebContainerServlet extends HttpServlet {
     
     /** Collection of CSS style sheet <code>Service</code>s which should be initially loaded. */
     private List initStyleSheets = null;
+    /** Whether to automatically handle asynchronous updates to windows in a multiple-window environment */
+    private boolean allowAsyncWindowUpdates = true;
     
     private WebSocketConnectionHandler wsHandler = null;
     /**
@@ -259,6 +272,10 @@ public abstract class WebContainerServlet extends HttpServlet {
 
     public void init() throws ServletException {
         super.init();
+        
+        if (getServletConfig().getInitParameter("allowAsyncWindowUpdates") != null) {
+            allowAsyncWindowUpdates = Boolean.parseBoolean(getServletConfig().getInitParameter("allowAsyncWindowUpdates"));
+        }
 
         // Read servlet init parameters and update server configuration
         ServerConfiguration.adoptServletConfiguration(getInitParameterMap());
@@ -505,5 +522,14 @@ public abstract class WebContainerServlet extends HttpServlet {
      */
     public Iterator getCssFileNames() {
         return cssFileNames.iterator();
+    }
+
+    /**
+     * Returns whether this web container servlet instance is automatically
+     * allowing asynchronous updates when multiple windows are active.
+     * @return
+     */
+    public boolean getAllowAsyncWindowUpdates() {
+        return allowAsyncWindowUpdates;
     }
 }

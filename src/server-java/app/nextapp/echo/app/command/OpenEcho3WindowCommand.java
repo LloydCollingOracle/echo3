@@ -27,46 +27,32 @@
  * the terms of any one of the MPL, the GPL or the LGPL.
  */
 
-package nextapp.echo.app.test;
+package nextapp.echo.app.command;
 
-import java.util.Map;
-
-import nextapp.echo.app.ApplicationInstance;
-import nextapp.echo.app.ContentPane;
-import nextapp.echo.app.Label;
+import nextapp.echo.app.Command;
 import nextapp.echo.app.Window;
 
 /**
- * Sample <code>ApplicationInstance</code> used by some tests.
- */
-class HelloWorldApp extends ApplicationInstance {
+ * A Web Application Container-specific <code>Command</code> to 
+ * open a new browser window displaying a specific URI.
+ * This action may not propagate to a client if the client has 
+ * pop-up blocking algorithm enabled.
+ */  
+public class OpenEcho3WindowCommand 
+implements Command {
     
-    public Window window;
-    public ContentPane content;
-    public Label label;
-    
-    /**
-     * @see nextapp.echo.app.ApplicationInstance#init()
-     */
-    public Window init(Map parameters) {
-        window = new Window(this);
-        content = window.getContent();
-        label = new Label("Hello, world!");
-        content.add(label);
-        return window;
-    }
+    /** The window to show. */
+    private Window window;
     
     /**
-     * Returns the "Hello, world" label.
+     * Creates a new <code>OpenEcho3WindowCommand</code>.
      */
-    public Label getLabel() {
-        return label;
+    public OpenEcho3WindowCommand(Window window) {
+        super();
+        this.window = window;
     }
-    
-    /**
-     * Returns the window content.
-     */
-    public ContentPane getContent() {
-        return content;
-    }
+
+	public Window getWindow() {
+		return window;
+	}
 }
