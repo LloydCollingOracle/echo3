@@ -10,8 +10,20 @@ Echo.RemoteClient.CommandExec.OpenEcho3Window = Core.extend(Echo.RemoteClient.Co
             if (!commandData.uri) {
                 throw new Error("URI not specified in OpenEcho3WindowCommand.");
             }
-            
-            window.open(commandData.uri, "_blank");
+
+            var DelayedMessageRunnable = Core.extend(Core.Web.Scheduler.Runnable, {
+
+                _message: null,
+
+                $construct: function(message) {
+                    this._message = message;
+                },
+
+                run: function() {
+                    window.open(this._message, "_blank");
+                }
+            });
+            Core.Web.Scheduler.add(new DelayedMessageRunnable(commandData.uri));
         }
      },
      

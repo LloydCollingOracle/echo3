@@ -598,7 +598,7 @@ Echo.RemoteClient = Core.extend(Echo.Client, {
     _removeLoadingScreen: function() {
         var loadingElement = document.getElementById("loadingDiv");
         if (loadingElement) {
-            loadingElement.style.display = "none";
+            loadingElement.parentNode.removeChild(loadingElement);
         }
     },
     

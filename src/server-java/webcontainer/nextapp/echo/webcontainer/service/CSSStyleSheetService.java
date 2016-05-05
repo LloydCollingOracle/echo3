@@ -14,6 +14,17 @@ import nextapp.echo.webcontainer.util.Resource;
  */
 public class CSSStyleSheetService implements Service {
 
+    public static final int ALL = 1;
+    public static final int BRAILLE = 2;
+    public static final int EMBOSSED = 4;
+    public static final int HANDHELD = 8;
+    public static final int PRINT = 16;
+    public static final int PROJECTION = 32;
+    public static final int SCREEN = 64;
+    public static final int SPEECH = 128;
+    public static final int TTY = 256;
+    public static final int TV = 512;
+
     /**
      * Creates a new <code>CSSStyleSheetService</code> based on the content in
      * the specified <code>CLASSPATH</code> resource. A runtime exception will
@@ -57,10 +68,59 @@ public class CSSStyleSheetService implements Service {
         String content = Resource.getResourceAsString(resourceName);
         return new CSSStyleSheetService(id, content, relativePath);
     }
+    
+    /**
+     * Creates a new <code>CSSStyleSheetService</code> based on the content in
+     * the specified <code>CLASSPATH</code> resource. A runtime exception will
+     * be thrown in the event the resource does not exist (it generally should
+     * not be caught).
+     * 
+     * Please Note that all urls in the StyleSheet must be relative to the
+     * Servlet location when this method is used.
+     * 
+     * @param id
+     *            the <code>Service</code> identifier
+     * @param resourceName
+     *            the path to the content resource in the <code>CLASSPATH</code>
+     * @param relativePath
+     *            the relative path to the stylesheet from the servlet
+     * @param media
+                  the supported media
+     * @return the created <code>CSSStyleSheetService</code>
+     */
+    public static CSSStyleSheetService forResource(String id,
+            String resourceName, int media) {
+        String content = Resource.getResourceAsString(resourceName);
+        return new CSSStyleSheetService(id, content, media);
+    }
+
+    /**
+     * Creates a new <code>CSSStyleSheetService</code> based on the content in
+     * the specified <code>CLASSPATH</code> resource with any image URLs updated
+     * to reflect the relative location compared to the application Servlet. A
+     * runtime exception will be thrown in the event the resource does not exist
+     * (it generally should not be caught).
+     * 
+     * @param id
+     *            the <code>Service</code> identifier
+     * @param resourceName
+     *            the path to the content resource in the <code>CLASSPATH</code>
+     * @param relativePath
+     *            the relative path to the stylesheet from the servlet
+     * @param media
+                  the supported media
+     * @return the created <code>CSSStyleSheetService</code>
+     */
+    public static CSSStyleSheetService forResource(String id,
+            String resourceName, String relativePath, int media) {
+        String content = Resource.getResourceAsString(resourceName);
+        return new CSSStyleSheetService(id, content, relativePath, media);
+    }
 
     private String id;
     private String content;
     private final String contentType = "text/css";
+    private int media = ALL;
 
     public CSSStyleSheetService(String id, String content) {
         super();
@@ -69,10 +129,60 @@ public class CSSStyleSheetService implements Service {
     }
 
     public CSSStyleSheetService(String id, String content, String relativePath) {
-        super();
-        this.id = id;
-        this.content = content;
+        this(id, content);
         processImageURLs(relativePath);
+    }
+
+    public CSSStyleSheetService(String id, String content, int media) {
+        this(id, content);
+        this.media = media;
+    }
+
+    public CSSStyleSheetService(String id, String content, String relativePath, int media) {
+        this(id, content, relativePath);
+        this.media = media;
+    }
+
+    public String getMediaCSV() {
+        StringBuffer buffer = new StringBuffer();
+        if((media & ALL) == ALL) {
+            addToCSVBuffer(buffer, "all");
+        }
+        if((media & BRAILLE) == BRAILLE) {
+            addToCSVBuffer(buffer, "braille");
+        }
+        if((media & EMBOSSED) == EMBOSSED) {
+            addToCSVBuffer(buffer, "embossed");
+        }
+        if((media & HANDHELD) == HANDHELD) {
+            addToCSVBuffer(buffer, "handheld");
+        }
+        if((media & PRINT) == PRINT) {
+            addToCSVBuffer(buffer, "print");
+        }
+        if((media & PROJECTION) == PROJECTION) {
+            addToCSVBuffer(buffer, "projection");
+        }
+        if((media & SCREEN) == SCREEN) {
+            addToCSVBuffer(buffer, "screen");
+        }
+        if((media & SPEECH) == SPEECH) {
+            addToCSVBuffer(buffer, "speech");
+        }
+        if((media & TTY) == TTY) {
+            addToCSVBuffer(buffer, "tty");
+        }
+        if((media & TV) == TV) {
+            addToCSVBuffer(buffer, "tv");
+        }
+        return buffer.toString();
+    }
+
+    private void addToCSVBuffer(StringBuffer buffer, String media) {
+        if(buffer.length() > 0) {
+            buffer.append(", ");
+        }
+        buffer.append(media);
     }
 
     public String getId() {
@@ -133,5 +243,13 @@ public class CSSStyleSheetService implements Service {
             endContent.append(content.substring(closeParen + 1));
         }
         this.content = endContent.toString();
+    }
+
+    public void setMedia(int media) {
+        this.media = media;
+    }
+
+    public int getMedia() {
+        return media;
     }
 }

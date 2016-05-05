@@ -231,6 +231,8 @@ implements Service {
                 linkElement.setAttribute("rel", "StyleSheet");
                 linkElement.setAttribute("type", "text/css");
                 linkElement.setAttribute("href", userInstanceContainer.getServiceUri(styleSheetService, null));
+                if(styleSheetService instanceof CSSStyleSheetService)
+                    linkElement.setAttribute("MEDIA", ((CSSStyleSheetService)styleSheetService).getMediaCSV());
                 headElement.appendChild(linkElement);
                 
                 Node linkTextNode = document.createTextNode(" ");
