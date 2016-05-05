@@ -4,3 +4,4 @@ build
 custom-ant.properties
 javadoc
 release
+/bin/
