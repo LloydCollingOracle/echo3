@@ -30,6 +30,7 @@
 package nextapp.echo.app.util;
 
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.PrintWriter;
 import java.util.ArrayList;
@@ -56,6 +57,9 @@ import org.w3c.dom.Text;
 import org.xml.sax.EntityResolver;
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
+
+import com.habitsoft.xhtml.dtds.FailingEntityResolver;
+import com.habitsoft.xhtml.dtds.XhtmlEntityResolver;
 
 /**
  * A utility class which provides methods for working with a W3C DOM.
@@ -105,6 +109,27 @@ public class DomUtil {
     };
     
     /**
+     * ThreadLocal cache of <code>DocumentBuilder</code> instances that do not validate documents.
+     */
+    private static final ThreadLocal nonValidatingDocumentBuilders = new ThreadLocal() {
+    
+        /**
+         * @see java.lang.ThreadLocal#initialValue()
+         */
+        protected Object initialValue() {
+            try {
+                DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
+                factory.setValidating(false);
+                DocumentBuilder builder = factory.newDocumentBuilder();
+                builder.setEntityResolver(new XhtmlEntityResolver(new FailingEntityResolver()));
+                return builder;
+            } catch (ParserConfigurationException ex) {
+                throw new RuntimeException(ex);
+            }
+        }
+    };
+    
+    /**
      * ThreadLocal cache of <code>TransformerFactory</code> instances.
      */
     private static final ThreadLocal transformerFactories = new ThreadLocal() {
@@ -136,10 +161,30 @@ public class DomUtil {
         }
         return document;
     }
+    
+    /**
+     * Loads a document.
+     * @param inputStream the input stream containing the document to load
+     * @throws IOException 
+     * @throws SAXException 
+     */
+    public static Document loadDocument(InputStream inputStream) throws IOException, SAXException {
+        Document document = DomUtil.getNonValidatingDocumentBuilder().parse(inputStream);
+        return document;
+    }
 
     /**
      * Retrieves a thread-specific <code>DocumentBuilder</code>.
      * As it is a shared resource, the returned object should not be reconfigured in any fashion.
+     * 
+     * @return the <code>DocumentBuilder</code> serving the current thread.
+     */
+    public static DocumentBuilder getNonValidatingDocumentBuilder() {
+        return (DocumentBuilder) nonValidatingDocumentBuilders.get();
+    }
+
+    /**
+     * Retrieves a thread-specific <code>DocumentBuilder</code>.
      * 
      * @return the <code>DocumentBuilder</code> serving the current thread.
      */

@@ -112,6 +112,15 @@ implements Serializable {
      * <code>IdTable</code>.
      */
     private void purge() {
+        /*
+         * Due to clustering, our transient fields may be null.
+         */
+        if (referenceQueue == null) {
+            referenceQueue = new ReferenceQueue();
+        }
+        if (idToReferenceMap == null) {
+            idToReferenceMap = new HashMap();
+        }
         // Convert any hard references to weak references.
         if (hasHardReferences) {
             synchronized (idToReferenceMap) {

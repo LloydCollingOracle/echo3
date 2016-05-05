@@ -43,6 +43,22 @@ Echo.Render = {
      * Created and destroyed during each render.
      */
     _disposedComponents: null,
+        
+    /**
+     * Listeners to be notified of rendering phase events.
+     * @type Core.ListenerList
+     */
+    _listenerList: new Core.ListenerList(),
+
+    /**
+     * Adds a listener to be notified when the renderDisplay
+     * phase of an update has been completed.
+     * 
+     * @param {Function} l the listener to add
+     */
+    addRenderDisplayCompleteListener: function(l) {
+        Echo.Render._listenerList.addListener("renderDisplayComplete", l);
+    },
     
     /**
      * An array sorting implementation to organize an array by component depth.
@@ -330,6 +346,11 @@ Echo.Render = {
             }
         }
     
+        // call any listeners that want to know when when the render display phase is finished
+        if (Echo.Render._listenerList.hasListeners("renderDisplayComplete")) {
+            Echo.Render._listenerList.fireEvent({type: "renderDisplayComplete"});
+        }
+    
         // Profiling: Mark completion of display phase.
         if (Echo.Client.profilingTimer) {
             Echo.Client.profilingTimer.mark("disp");
@@ -369,6 +390,15 @@ Echo.Render = {
             throw new Error("Peer already registered: " + componentName);
         }
         this._peers[componentName] = peerObject;
+    },
+    
+    /**
+     * Removes a renderDisplayCompleteListener.
+     * 
+     * @param {Function} l the listener to remove
+     */
+    removeRenderDisplayCompleteListener: function(l) {
+        this._listenerList.removeListener("renderDisplayComplete", l);
     },
     
     /**

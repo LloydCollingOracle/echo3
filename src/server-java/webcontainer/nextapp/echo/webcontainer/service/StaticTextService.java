@@ -29,7 +29,6 @@
 
 package nextapp.echo.webcontainer.service;
 
-
 import java.io.IOException;
 
 import nextapp.echo.webcontainer.Connection;
@@ -39,22 +38,24 @@ import nextapp.echo.webcontainer.util.Resource;
 /**
  * A service which renders a text resource, such as a text or XML document.
  */
-public class StaticTextService 
-implements Service {
-    
+public class StaticTextService implements Service {
+
     /**
      * Creates a new <code>StaticTextService</code> based on the content in the
-     * specified <code>CLASSPATH</code> resource.  A runtime exception will be 
-     * thrown in the even the resource does not exist (it generally should not
+     * specified <code>CLASSPATH</code> resource. A runtime exception will be
+     * thrown in the event the resource does not exist (it generally should not
      * be caught).
      * 
-     * @param id the <code>Service</code> identifier
-     * @param contentType the content type of the document
-     * @param resourceName the path to the content resource in the 
-     *        <code>CLASSPATH</code>
+     * @param id
+     *            the <code>Service</code> identifier
+     * @param contentType
+     *            the content type of the document
+     * @param resourceName
+     *            the path to the content resource in the <code>CLASSPATH</code>
      * @return the created <code>StaticTextService</code>
      */
-    public static StaticTextService forResource(String id, String contentType, String resourceName) {
+    public static StaticTextService forResource(String id, String contentType,
+            String resourceName) {
         String content = Resource.getResourceAsString(resourceName);
         return new StaticTextService(id, contentType, content);
     }
@@ -67,13 +68,16 @@ implements Service {
     
     /** The content type of the data. */
     private String contentType;
-    
+
     /**
      * Creates a new <code>StaticTextService</code>.
      * 
-     * @param id the <code>Service</code> identifier
-     * @param contentType the content type of the document
-     * @param content the text
+     * @param id
+     *            the <code>Service</code> identifier
+     * @param contentType
+     *            the content type of the document
+     * @param content
+     *            the text
      */
     public StaticTextService(String id, String contentType, String content) {
         super();
@@ -81,21 +85,21 @@ implements Service {
         this.contentType = contentType;
         this.content = content;
     }
-    
+
     /**
      * @see Service#getId()
      */
     public String getId() {
         return id;
     }
-    
+
     /**
      * @see Service#getVersion()
      */
     public int getVersion() {
         return 0;
     }
-    
+
     /**
      * @see Service#service(nextapp.echo.webcontainer.Connection)
      */

@@ -187,25 +187,20 @@ implements ComponentSynchronizePeer {
     public AbstractComponentSynchronizePeer() {
         super();
 
-        try {
-            stylePropertyNames = new HashSet();
-            indexedPropertyNames = new HashSet();
-            Class componentClass = getComponentClass();
-            ComponentIntrospector ci = (ComponentIntrospector) IntrospectorFactory.get(componentClass.getName(),
-                    componentClass.getClassLoader());
-            Iterator propertyNameIt = ci.getPropertyNames();
-            while (propertyNameIt.hasNext()) {
-                String propertyName = (String) propertyNameIt.next();
-                if (ci.getStyleConstantName(propertyName) != null) {
-                    stylePropertyNames.add(propertyName);
-                    if (ci.isIndexedProperty(propertyName)) {
-                        indexedPropertyNames.add(propertyName);
-                    }
+        stylePropertyNames = new HashSet();
+        indexedPropertyNames = new HashSet();
+        Class componentClass = getComponentClass();
+        ComponentIntrospector ci = (ComponentIntrospector) IntrospectorFactory.get(componentClass,
+                componentClass.getClassLoader());
+        Iterator propertyNameIt = ci.getPropertyNames();
+        while (propertyNameIt.hasNext()) {
+            String propertyName = (String) propertyNameIt.next();
+            if (ci.getStyleConstantName(propertyName) != null) {
+                stylePropertyNames.add(propertyName);
+                if (ci.isIndexedProperty(propertyName)) {
+                    indexedPropertyNames.add(propertyName);
                 }
             }
-        } catch (ClassNotFoundException ex) {
-            // Should never occur.
-            throw new RuntimeException("Internal error.", ex);
         }
     }
     

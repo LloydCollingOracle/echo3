@@ -30,6 +30,7 @@
 package nextapp.echo.app;
 
 import java.io.Serializable;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.SortedMap;
 import java.util.TreeMap;
@@ -158,6 +159,7 @@ implements Style {
     
     private Object[] data = EMPTY;
     int length = 0; // Number of items * 2;
+    HashSet complexProperties = new HashSet();
 
     /**
      * Default constructor.
@@ -432,5 +434,16 @@ implements Style {
         }
         out.append("}");
         return out.toString();
+    }
+
+    public boolean isComplexProperty(String propertyName) {
+        return complexProperties.contains(propertyName);
+    }
+
+    public void setComplexProperty(String propertyName, boolean isComplex) {
+        if (!isComplex)
+            complexProperties.remove(propertyName);
+        if (isComplex)
+            complexProperties.add(propertyName);
     }
 }

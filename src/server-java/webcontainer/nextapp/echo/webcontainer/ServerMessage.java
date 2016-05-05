@@ -36,6 +36,7 @@ import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
 
+import nextapp.echo.app.ApplicationInstance;
 import nextapp.echo.app.util.DomUtil;
 
 /**
@@ -100,6 +101,7 @@ public class ServerMessage {
         if (addedLibraries.contains(serviceId)) {
             return;
         }
+        
         Element libraryElement = document.createElement("lib");
         libraryElement.appendChild(document.createTextNode(serviceId));
         librariesElement.appendChild(libraryElement);

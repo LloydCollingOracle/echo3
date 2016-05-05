@@ -83,15 +83,45 @@ implements Service {
      * @param content the <code>JavaScript content</code>
      */
     public JavaScriptService(String id, String content) {
+        this(id, content, true, true);
+    }
+    
+    /**
+     * Creates a new <code>JavaScriptService</code>.
+     * 
+     * @param id the <code>Service</code> id
+     * @param content the <code>JavaScript content</code>
+     */
+    public JavaScriptService(String id, String content, boolean strip, boolean gzip) {
+        super();
+        this.id = id;
+//        this.content = ServerConfiguration.JAVASCRIPT_COMPRESSION_ENABLED ? JavaScriptCompressor.compress(content) : content;
+        this.content = content;
+        if (strip && ServerConfiguration.JAVASCRIPT_COMPRESSION_ENABLED) {
+        	this.content = JavaScriptCompressor.compress(this.content);
+        }
+        if (gzip) {
+	        try {
+	            gzipContent = GZipCompressor.compress(this.content);
+	        } catch (IOException ex) {
+	            // Should not occur.
+	            throw new RuntimeException("Exception compressing JavaScript source.", ex);
+	        }
+        }
+    }
+    
+    /**
+     * Creates a new <code>JavaScriptService</code>.
+     * 
+     * @param id the <code>Service</code> id
+     * @param content the <code>JavaScript content</code>
+     * @param gzippedContent the gzip-compressed <code>JavaScript content</code>
+     */
+    public JavaScriptService(String id, String content, byte[] gzippedContent) {
         super();
         this.id = id;
         this.content = ServerConfiguration.JAVASCRIPT_COMPRESSION_ENABLED ? JavaScriptCompressor.compress(content) : content;
-        try {
-            gzipContent = GZipCompressor.compress(this.content);
-        } catch (IOException ex) {
-            // Should not occur.
-            throw new RuntimeException("Exception compressing JavaScript source.", ex);
-        }
+        gzipContent = gzippedContent;
     }
     
     /**

@@ -35,7 +35,7 @@ import java.util.List;
 /**
  * The default <code>TableModel</code> implementation.
  */
-public class DefaultTableModel extends AbstractTableModel {
+public class DefaultTableModel extends AbstractTableModel implements EditableTableModel {
     
     /** Serial Version UID. */
     private static final long serialVersionUID = 20070101L;

@@ -120,6 +120,26 @@ public class IntrospectionUtil {
     }
     
     /**
+     * Determines if <code>superClass</code> is a superclass of 
+     * <code>testClass</code>.
+     * 
+     * @param testType the class to test
+     * @param superType a class which may/may not be a superclass of
+     *        <code>testClass</code>
+     * @return true if <code>superClass</code> is a superclass of 
+     *         <code>testClass</code>
+     */
+    public static boolean isSuperType(Class testType, Class superType) {
+        while (testType != Object.class) {
+            if (testType.equals(superType)) {
+                return true;
+            }
+            testType = testType.getSuperclass();
+        }
+        return false;
+    }
+    
+    /**
      * Removes the package name from a type name.
      * 
      * @param type a fully qualified type name

@@ -171,6 +171,7 @@ Echo.RemoteClient = Core.extend(Echo.Client, {
             this.configuration[x] = Echo.RemoteClient.DEFAULT_CONFIGURATION[x];    
         }
         this._serverUrl = serverUrl;
+        this._listenerList = new Core.ListenerList();
         
         this._processClientEventRef = Core.method(this, this._processClientEvent);
         this._commandQueue = null;
@@ -190,6 +191,17 @@ Echo.RemoteClient = Core.extend(Echo.Client, {
      */
     addComponentListener: function(component, eventType) {
         component.addListener(eventType, this._processClientEventRef);
+    },
+    
+    /**
+     * Adds a listener to be notified when a server update has been
+     * completely processed, that is, all component and rendering
+     * updates have been completed.
+     * 
+     * @param {Function} l the listener to add
+     */
+    addServerUpdateCompleteListener: function(l) {
+        this._listenerList.addListener("serverUpdateComplete", l);
     },
     
     /**
@@ -459,6 +471,9 @@ Echo.RemoteClient = Core.extend(Echo.Client, {
             } else {
                 this._clientMessage.storeProperty(e.parent.renderId, e.propertyName, e.newValue);
             }
+            if (this._listenerList.hasListeners("serverUpdateComplete")) {
+                this._listenerList.fireEvent({type: "serverUpdateComplete"});
+            }
             if (!this._transactionInProgress) {
                 // has an asynchronous update (e.g: timer periodically set a property)
                 Core.Web.Scheduler.update(this._asyncUpdatesHandler, true);
@@ -549,11 +564,13 @@ Echo.RemoteClient = Core.extend(Echo.Client, {
             return;
         }
         
+        var initMessage = false;
         // If this is the first ServerMessage received, initialize the client
         // This step will create the application, determine where in the DOM the application should be
         // rendered, and so forth.
         if (!this._initialized) {
             this.init(responseDocument);
+            initMessage = true;
         }
         
         // Profiling Timer (Un-comment to enable, comment to disable).
@@ -568,9 +585,23 @@ Echo.RemoteClient = Core.extend(Echo.Client, {
         // (Some elements of the server message are processed asynchronously). 
         serverMessage.addCompletionListener(Core.method(this, this._processSyncComplete));
         
+
+        // if this is the first message, remove the loading div once the server message
+        // has been processed
+        if (initMessage == true) {
+            serverMessage.addCompletionListener(this._removeLoadingScreen);
+        }
+        
         // Start server message processing.
         this._processServerMessage = true;
         serverMessage.process();
+    },
+    
+    _removeLoadingScreen: function() {
+        var loadingElement = document.getElementById("loadingDiv");
+        if (loadingElement) {
+            loadingElement.style.display = "none";
+        }
     },
     
     /**
@@ -581,6 +612,15 @@ Echo.RemoteClient = Core.extend(Echo.Client, {
      */
     removeComponentListener: function(component, eventType) {
         component.removeListener(eventType, this._processClientEventRef);
+    },
+    
+    /**
+     * Removes a ServerUpdateCompleteListener.
+     * 
+     * @param {Function} l the listener to remove
+     */
+    removeServerUpdateCompleteListener: function(l) {
+        this._listenerList.removeListener("serverUpdateComplete", l);
     },
     
     /**

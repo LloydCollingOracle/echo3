@@ -1678,4 +1678,12 @@ implements RenderIdSupport, Serializable {
         }
         return -1;
     }
+
+    public boolean isComplexProperty(String propertyName) {
+        return localStyle.isComplexProperty(propertyName);
+    }
+
+    public void setComplexProperty(String propertyName, boolean isComplex) {
+        localStyle.setComplexProperty(propertyName, isComplex);
+    }
 }

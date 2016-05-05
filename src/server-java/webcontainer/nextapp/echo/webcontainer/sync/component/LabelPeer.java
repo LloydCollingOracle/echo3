@@ -47,8 +47,18 @@ public class LabelPeer extends AbstractComponentSynchronizePeer {
     private static final Service LABEL_SERVICE = JavaScriptService.forResource("Echo.Label", 
             "nextapp/echo/webcontainer/resource/Sync.Label.js");
     
+    private static boolean serviceAdded = true;
+    
     static {
-        WebContainerServlet.getServiceRegistry().add(LABEL_SERVICE);
+        try {
+            if (WebContainerServlet.getServiceRegistry().get(LABEL_SERVICE.getId()) == null) {
+                WebContainerServlet.getServiceRegistry().add(LABEL_SERVICE);
+            } else {
+                serviceAdded = false;
+            }
+        } catch (IllegalArgumentException e) {
+            serviceAdded = false;
+        }
     }
     
     /**
@@ -71,6 +81,8 @@ public class LabelPeer extends AbstractComponentSynchronizePeer {
     public void init(Context context, Component component) {
         super.init(context, component);
         ServerMessage serverMessage = (ServerMessage) context.get(ServerMessage.class);
-        serverMessage.addLibrary(LABEL_SERVICE.getId());
+        if (serviceAdded) {
+            serverMessage.addLibrary(LABEL_SERVICE.getId());
+        }
     }
 }

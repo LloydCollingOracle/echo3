@@ -1242,7 +1242,7 @@ Echo.Component = Core.extend({
     set: function(name, newValue, rendered) {
         var oldValue = this._localStyle[name];
         if (oldValue === newValue) {
-            return;
+            //return;
         }
         this._localStyle[name] = newValue;
         if (this._listenerList && this._listenerList.hasListeners("property")) {

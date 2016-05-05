@@ -29,6 +29,19 @@
 
 package nextapp.echo.webcontainer;
 
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Set;
+
+import javax.servlet.ServletException;
+import javax.servlet.http.HttpServlet;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
 import nextapp.echo.app.ApplicationInstance;
 import nextapp.echo.app.util.Log;
 import nextapp.echo.app.util.Uid;
@@ -41,13 +54,7 @@ import nextapp.echo.webcontainer.service.StaticTextService;
 import nextapp.echo.webcontainer.service.SynchronizeService;
 import nextapp.echo.webcontainer.service.WindowHtmlService;
 
-import java.io.IOException;
 import java.util.*;
-
-import javax.servlet.ServletException;
-import javax.servlet.http.HttpServlet;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 
 /**
  * Web container <code>HttpServlet</code> implementation.
@@ -481,5 +488,22 @@ public abstract class WebContainerServlet extends HttpServlet {
         response.setContentType("text/plain");
         response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
         response.getWriter().write("Server Exception. ID: " + exceptionId);
+    }
+    
+    private Set cssFileNames = new HashSet();
+    
+    /**
+     * Adds a css file name to be added to the window html.
+     */
+    public void addCssFileName(String cssFileName) {
+        cssFileNames.add(cssFileName);
+    }
+    
+    /**
+     * Returns an iterator over the CSS file names.
+     * @return the iterator.
+     */
+    public Iterator getCssFileNames() {
+        return cssFileNames.iterator();
     }
 }

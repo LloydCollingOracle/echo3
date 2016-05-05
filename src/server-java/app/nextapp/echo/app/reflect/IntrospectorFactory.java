@@ -33,6 +33,8 @@ import java.beans.Introspector;
 import java.util.HashMap;
 import java.util.Map;
 
+import nextapp.echo.app.Component;
+
 /**
  * Factory for creating <code>ClassLoader</code>-specific <code>ObjectIntrospector</code> instances.
  */
@@ -52,12 +54,11 @@ public class IntrospectorFactory {
      * @return the <code>ObjectIntrospector</code>
      * @throws ClassNotFoundException if the type does not exist for the specified <code>ClassLoader</code>
      */
-    private static ObjectIntrospector createIntrospector(String typeName, ClassLoader classLoader) 
-    throws ClassNotFoundException {
-        if (IntrospectionUtil.isSuperType(typeName, "nextapp.echo.app.Component", classLoader)) {
-            return new ComponentIntrospector(typeName, classLoader);
+    private static ObjectIntrospector createIntrospector(Class type, ClassLoader classLoader) {
+        if (IntrospectionUtil.isSuperType(type, Component.class)) {
+            return new ComponentIntrospector(type, classLoader);
         } else {
-            return new ObjectIntrospector(typeName, classLoader);
+            return new ObjectIntrospector(type);
         }
     }
     
@@ -88,6 +89,20 @@ public class IntrospectorFactory {
      */
     public static ObjectIntrospector get(String typeName, ClassLoader classLoader) 
     throws ClassNotFoundException {
+        return IntrospectorFactory.get(Class.forName(typeName, true, classLoader), classLoader);
+    }
+    
+    /**
+     * Retrieves or creates an <code>ObjectIntrospector</code> instance for a specific type
+     * from a specific <code>ClassLoader</code>
+     * 
+     * @param typeName the type to introspect
+     * @param classLoader the <code>ClassLoader</code>
+     * @return an <code>ObjectIntrospector</code> for the appropriate type 
+     *         (a <code>ComponentIntrospector</code> in the event the type is an <code>Component</code>)
+     * @throws ClassNotFoundException if the type is not provided by the <code>ClassLoader</code>
+     */
+    public static ObjectIntrospector get(Class type, ClassLoader classLoader) {
         // Find or Create Object Introspector Store based on ClassLoader Cache.
         Map oiStore;
         synchronized (classLoaderCache) {
@@ -101,10 +116,10 @@ public class IntrospectorFactory {
         // Find or Create Object Introspector from Object Introspector Store.
         ObjectIntrospector oi;
         synchronized (oiStore) {
-            oi =  (ObjectIntrospector) oiStore.get(typeName);
+            oi =  (ObjectIntrospector) oiStore.get(type.getName());
             if (oi == null) {
-                oi = createIntrospector(typeName, classLoader);
-                oiStore.put(typeName, oi);
+                oi = createIntrospector(type, classLoader);
+                oiStore.put(type.getName(), oi);
             }
         }
         return oi;

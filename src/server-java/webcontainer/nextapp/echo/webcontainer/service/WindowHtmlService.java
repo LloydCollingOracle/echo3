@@ -30,6 +30,7 @@
 package nextapp.echo.webcontainer.service;
 
 import java.io.IOException;
+import java.util.Enumeration;
 import java.util.Iterator;
 import java.util.Properties;
 import java.util.regex.Pattern;
@@ -37,8 +38,11 @@ import java.util.regex.Pattern;
 import javax.xml.transform.OutputKeys;
 
 import nextapp.echo.webcontainer.*;
+
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
+import org.w3c.dom.Node;
+import org.w3c.dom.NodeList;
 import org.w3c.dom.Text;
 import org.xml.sax.SAXException;
 
@@ -80,6 +84,8 @@ implements Service {
 
     /** Singleton instance. */
     public static final WindowHtmlService INSTANCE = new WindowHtmlService();
+    
+    private static final String INITIAL_DOCUMENT_CLASS_PATH_LOCATION = "Echo3ApplicationDocument.html";
 
     /**
      * Create a new root window HTML document.
@@ -91,47 +97,107 @@ implements Service {
     private Document createHtmlDocument(Connection conn, boolean debug) {
         UserInstanceContainer userInstanceContainer = conn.getUserInstanceContainer();
         String userAgent = conn.getRequest().getHeader("User-Agent");
-        Document document = DomUtil.createDocument("html", XHTML_1_0_TRANSITIONAL_PUBLIC_ID, 
-                XHTML_1_0_TRANSITIONAL_SYSTEM_ID, XHTML_1_0_NAMESPACE_URI);
         
-        Element htmlElement = document.getDocumentElement();
-
-        Element headElement = document.createElement("head");
-        htmlElement.appendChild(headElement);
-        
-        Element metaGeneratorElement = document.createElement("meta");
-        metaGeneratorElement.setAttribute("name", "generator");
-        metaGeneratorElement.setAttribute("content", ApplicationInstance.ID_STRING);
-        headElement.appendChild(metaGeneratorElement);
-
-        if (ServerConfiguration.IE_EDGE_MODE) {
-            Element metaCompElement = document.createElement("meta");
-            metaCompElement.setAttribute("http-equiv", "X-UA-Compatible");
-            metaCompElement.setAttribute("content", "IE=edge");
-            headElement.appendChild(metaCompElement);
+        Document document = null;
+        // only used when a document is created from scratch
+        Element htmlElement;
+        Node headElement = null;
+        Element bodyElement = null;
+        Enumeration documents = null;
+        // try finding a html document to use for the initial page structure
+        try {
+            documents = Thread.currentThread().getContextClassLoader()
+                    .getResources(INITIAL_DOCUMENT_CLASS_PATH_LOCATION);
+        } catch (IOException e) {
+            e.printStackTrace();
         }
-        else if (userAgent != null && USER_AGENT_MSIE8.matcher(userAgent).find()) {
-            // Force Internet Explorer 8 standards-compliant mode.
-            Element metaCompElement = document.createElement("meta");
-            metaCompElement.setAttribute("http-equiv", "X-UA-Compatible");
-            metaCompElement.setAttribute("content", "IE=8");
-            headElement.appendChild(metaCompElement);
+        // if we have a document, load it in and then assign the nodes into
+        // the variables declared above
+        if (documents != null && documents.hasMoreElements()) {
+            try {
+                document = DomUtil.loadDocument(Thread.currentThread()
+                        .getContextClassLoader().getResourceAsStream(
+                        		INITIAL_DOCUMENT_CLASS_PATH_LOCATION));
+            } catch (IOException e) {
+                e.printStackTrace();
+            } catch (SAXException e) {
+                e.printStackTrace();
+            }
+
+            Element htmlElement = document.getDocumentElement();
+            NodeList headElements = htmlElement.getElementsByTagName("head");
+            if (headElements == null || headElements.getLength() == 0)
+                headElements = htmlElement.getElementsByTagName("HEAD");
+
+            if (headElements == null || headElements.getLength() == 0) {
+                headElement = document.createElement("head");
+                if (htmlElement.getChildNodes() != null
+                        && htmlElement.getChildNodes().getLength() > 0)
+                    htmlElement.insertBefore(headElement, htmlElement
+                            .getFirstChild());
+                else
+                    htmlElement.appendChild(headElement);
+            } else {
+                headElement = headElements.item(0);
+            }
+
+            NodeList bodyElements = htmlElement.getElementsByTagName("body");
+            if (bodyElements == null || bodyElements.getLength() == 0)
+                bodyElements = htmlElement.getElementsByTagName("BODY");
+
+            if (bodyElements == null || bodyElements.getLength() == 0) {
+                bodyElement = document.createElement("body");
+                htmlElement.appendChild(bodyElement);
+            } else {
+                bodyElement = (Element)bodyElements.item(0);
+            }
         }
-
-        // Force UTF-8 document code for IE9. See http://echo.nextapp.com/site/node/6658
-        Element contentTypeElement = document.createElement("meta");
-        contentTypeElement.setAttribute("http-equiv", "Content-Type");
-        contentTypeElement.setAttribute("content", "text/html; charset=utf-8");
-        headElement.appendChild(contentTypeElement);
-
-        Element titleElement = document.createElement("title");
-        titleElement.appendChild(document.createTextNode(" "));
-        headElement.appendChild(titleElement);
+        boolean createdDocument = document == null;
         
-        Element styleElement = document.createElement("style");
-        styleElement.setAttribute("type", "text/css");
-        styleElement.appendChild(document.createTextNode(" "));
-        headElement.appendChild(styleElement);
+        if (createdDocument) {
+	        document = DomUtil.createDocument("html", XHTML_1_0_TRANSITIONAL_PUBLIC_ID, 
+	                XHTML_1_0_TRANSITIONAL_SYSTEM_ID, XHTML_1_0_NAMESPACE_URI);
+	        
+	        htmlElement = document.getDocumentElement();
+	
+	        headElement = document.createElement("head");
+	        htmlElement.appendChild(headElement);
+	        
+	        Element metaGeneratorElement = document.createElement("meta");
+	        metaGeneratorElement.setAttribute("name", "generator");
+	        metaGeneratorElement.setAttribute("content", ApplicationInstance.ID_STRING);
+	        headElement.appendChild(metaGeneratorElement);
+	
+	        if (ServerConfiguration.IE_EDGE_MODE) {
+	            Element metaCompElement = document.createElement("meta");
+	            metaCompElement.setAttribute("http-equiv", "X-UA-Compatible");
+	            metaCompElement.setAttribute("content", "IE=edge");
+	            headElement.appendChild(metaCompElement);
+	        }
+	        else if (userAgent != null && USER_AGENT_MSIE8.matcher(userAgent).find()) {
+	            // Force Internet Explorer 8 standards-compliant mode.
+	            Element metaCompElement = document.createElement("meta");
+	            metaCompElement.setAttribute("http-equiv", "X-UA-Compatible");
+	            metaCompElement.setAttribute("content", "IE=8");
+	            headElement.appendChild(metaCompElement);
+	        }
+	
+	        // Force UTF-8 document code for IE9. See http://echo.nextapp.com/site/node/6658
+	        Element contentTypeElement = document.createElement("meta");
+	        contentTypeElement.setAttribute("http-equiv", "Content-Type");
+	        contentTypeElement.setAttribute("content", "text/html; charset=utf-8");
+	        headElement.appendChild(contentTypeElement);
+	
+	        Element titleElement = document.createElement("title");
+	        titleElement.appendChild(document.createTextNode(" "));
+	        headElement.appendChild(titleElement);
+	        
+	        Element styleElement = document.createElement("style");
+	        styleElement.setAttribute("type", "text/css");
+	        styleElement.appendChild(document.createTextNode(" "));
+	        headElement.appendChild(styleElement);
+	        
+        }
 
         Element scriptElement = document.createElement("script");
         Text textNode = document.createTextNode(" ");
@@ -155,7 +221,7 @@ implements Service {
                 headElement.appendChild(scriptElement);
             }
         }
-        
+
         // Include application-provided stylesheet(s).
         Iterator styleSheetIt = servlet.getInitStyleSheets();
         if (styleSheetIt != null) {
@@ -168,22 +234,25 @@ implements Service {
                 headElement.appendChild(linkElement);
             }
         }
+
+        if (createdDocument) {
+	        bodyElement = document.createElement("body");
+	        bodyElement.setAttribute("id", "body");
+	        htmlElement.appendChild(bodyElement);
+        }
         
-        Element bodyElement = document.createElement("body");
-        bodyElement.setAttribute("id", "body");
         bodyElement.setAttribute("onload", "Echo.Boot.boot('" + userInstanceContainer.getServletUri() + "', '" + 
                 userInstanceContainer.createInitId(conn) + "', " + debug + ");");
         bodyElement.setAttribute("style",
                 "height:100%;width:100%;margin:0px;padding:0px;" +
                 "font-family:verdana, arial, helvetica, sans-serif;font-size:10pt");
-        htmlElement.appendChild(bodyElement);
 
         Element rootDivElement = document.createElement("div");
         rootDivElement.setAttribute("style", "position:absolute;width:100%;height:100%;");
         rootDivElement.setAttribute("id", userInstanceContainer.getRootHtmlElementId());
         bodyElement.appendChild(rootDivElement);
 
-        // Add a <noscript> element that shows up when JavaScript is disabled in the browser (and echo therefor
+        // Add a <noscript> element that shows up when JavaScript is disabled in the browser (and echo therefore
         // does not work at all)
         if (ServerConfiguration.NOSCRIPT_MESSAGE != null && !"".equals(ServerConfiguration.NOSCRIPT_MESSAGE)) {
             Element jsDisabledDiv = document.createElement("noscript");

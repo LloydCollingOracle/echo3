@@ -625,7 +625,7 @@ class OutputProcessor {
         
         componentPeer.init(context, c);
 
-        renderComponentStyleName(cElement, c, false);
+        renderComponentStyleName(cElement, c, true);
         renderComponentStyle(cElement, c, false);
         
         // Render focus traversal information.
@@ -782,7 +782,11 @@ class OutputProcessor {
         } else {
             // A synchronize peer exists for the style class, simply render the style name.
             Element sElement = document.createElement("s");
-            sElement.appendChild(document.createTextNode(styleName == null ? "" : styleName));
+            if (styleName == null) {
+                sElement.appendChild(document.createTextNode(":" + styleClass.getName()));
+            } else {
+                sElement.appendChild(document.createTextNode(styleName));
+            }
             element.appendChild(sElement);
         }
     }
@@ -880,14 +884,8 @@ class OutputProcessor {
     throws SerialException {
         Document document = sElement.getOwnerDocument();
         
-        ComponentIntrospector ci;
-        try {
-            ci = (ComponentIntrospector) IntrospectorFactory.get(componentClass.getName(),
+        ComponentIntrospector ci = (ComponentIntrospector) IntrospectorFactory.get(componentClass,
                     componentClass.getClassLoader());
-        } catch (ClassNotFoundException ex) {
-            // Should never occur.
-            throw new RuntimeException("Internal error.", ex);
-        }
         
         Iterator it = style.getPropertyNames();
         while (it.hasNext()) {
@@ -974,6 +972,8 @@ class OutputProcessor {
                     // Synchronize peer does exist for style's specific component class, render style name unmodified.
                     if (styleName != null) {
                         sElement.setAttribute("n", styleName);
+                    } else {
+                        sElement.setAttribute("n", ":" + componentClass.getName());
                     }
                 }
 

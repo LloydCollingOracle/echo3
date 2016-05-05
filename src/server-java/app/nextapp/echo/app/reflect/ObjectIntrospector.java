@@ -98,8 +98,18 @@ public class ObjectIntrospector {
      */
     protected ObjectIntrospector(String typeName, ClassLoader classLoader) 
     throws ClassNotFoundException {
+        this(Class.forName(typeName, true, classLoader));
+    }
+    
+    /**
+     * Creates a new <code>ObjectIntrospector</code> for the specified
+     * type.
+     * 
+     * @param type the object type
+     */
+    protected ObjectIntrospector(Class type) {
         super();
-        objectClass = Class.forName(typeName, true, classLoader);
+        objectClass = type;
         try {
             beanInfo = Introspector.getBeanInfo(objectClass, Introspector.IGNORE_ALL_BEANINFO);
         } catch (IntrospectionException ex) {
