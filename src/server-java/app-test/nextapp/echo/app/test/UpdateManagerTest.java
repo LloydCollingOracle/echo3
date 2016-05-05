@@ -30,7 +30,9 @@
 package nextapp.echo.app.test;
 
 import java.util.Arrays;
+import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 
 import nextapp.echo.app.Alignment;
 import nextapp.echo.app.ApplicationInstance;
@@ -102,7 +104,7 @@ public class UpdateManagerTest extends TestCase  {
         assertEquals(1, componentUpdates.length);
         addedChildren = componentUpdates[0].getAddedChildren();
         assertEquals(1, addedChildren.length);
-        assertEquals(0, componentUpdates[0].getRemovedChildren().length);
+        assertEquals(0, componentUpdates[0].getRemovedChildren().size());
         assertEquals(column1, addedChildren[0]);
         
         // Add a label to column.
@@ -113,7 +115,7 @@ public class UpdateManagerTest extends TestCase  {
         assertEquals(1, componentUpdates.length);
         addedChildren = componentUpdates[0].getAddedChildren();
         assertEquals(1, addedChildren.length);
-        assertEquals(0, componentUpdates[0].getRemovedChildren().length);
+        assertEquals(0, componentUpdates[0].getRemovedChildren().size());
         assertEquals(column1, addedChildren[0]);
 
         // Add another column.
@@ -127,7 +129,7 @@ public class UpdateManagerTest extends TestCase  {
         assertEquals(1, componentUpdates.length);
         addedChildren = componentUpdates[0].getAddedChildren();
         assertEquals(2, addedChildren.length);
-        assertEquals(0, componentUpdates[0].getRemovedChildren().length);
+        assertEquals(0, componentUpdates[0].getRemovedChildren().size());
         
         List addedChildrenList = Arrays.asList(addedChildren);
         assertTrue(addedChildrenList.contains(column1));
@@ -313,7 +315,7 @@ public class UpdateManagerTest extends TestCase  {
         assertEquals(columnApp.getLabel(), componentUpdates[0].getParent());
         assertEquals(1, componentUpdates.length);
         assertEquals(0, componentUpdates[0].getAddedChildren().length);
-        assertEquals(0, componentUpdates[0].getRemovedChildren().length);
+        assertEquals(0, componentUpdates[0].getRemovedChildren().size());
         
         String[] updatedPropertyNames = componentUpdates[0].getUpdatedPropertyNames(); 
         assertEquals(1, updatedPropertyNames.length);
@@ -420,13 +422,13 @@ public class UpdateManagerTest extends TestCase  {
         assertEquals(true, componentUpdates[0].hasRemovedChildren());
         assertEquals(true, componentUpdates[0].hasRemovedDescendants());
         
-        Component[] removedChildren = componentUpdates[0].getRemovedChildren();
-        assertEquals(1, removedChildren.length);
-        assertEquals(column, removedChildren[0]);
+        Map removedChildren = componentUpdates[0].getRemovedChildren();
+        assertEquals(1, removedChildren.size());
+        assertEquals(column, ((Map.Entry)removedChildren.entrySet().iterator().next()).getValue());
         
-        Component[] removedDescendants = componentUpdates[0].getRemovedDescendants();
-        assertEquals(1, removedDescendants.length);
-        assertEquals(label, removedDescendants[0]);
+        Map removedDescendants = componentUpdates[0].getRemovedDescendants();
+        assertEquals(1, removedDescendants.size());
+        assertEquals(label, ((Map.Entry)removedDescendants.entrySet().iterator().next()).getValue());
     }
 
     /**
@@ -469,14 +471,17 @@ public class UpdateManagerTest extends TestCase  {
         assertEquals(true, componentUpdates[0].hasRemovedChildren());
         assertEquals(true, componentUpdates[0].hasRemovedDescendants());
         
-        Component[] removedChildren = componentUpdates[0].getRemovedChildren();
-        assertEquals(1, removedChildren.length);
-        assertEquals(column1, removedChildren[0]);
+        Map removedChildren = componentUpdates[0].getRemovedChildren();
+        assertEquals(1, removedChildren.size());
+        assertEquals(column1, ((Map.Entry)removedChildren.entrySet().iterator().next()).getValue());
         
-        Component[] removedDescendants = componentUpdates[0].getRemovedDescendants();
-        assertEquals(2, removedDescendants.length);
-        assertTrue(removedDescendants[0].equals(column2) || removedDescendants[1].equals(column2));
-        assertTrue(removedDescendants[0].equals(label) || removedDescendants[1].equals(label));
+        Map removedDescendants = componentUpdates[0].getRemovedDescendants();
+        assertEquals(2, removedDescendants.size());
+        Iterator i = removedDescendants.entrySet().iterator();
+        Component zero = (Component)((Map.Entry)i.next()).getValue();
+        Component one = (Component)((Map.Entry)i.next()).getValue();
+        assertTrue(zero.equals(column2) || one.equals(column2));
+        assertTrue(zero.equals(label) || one.equals(label));
     }
 
     /**
@@ -556,9 +561,9 @@ public class UpdateManagerTest extends TestCase  {
         assertEquals(Component.CHILD_VISIBLE_CHANGED_PROPERTY, componentUpdates[0].getUpdatedPropertyNames()[0]);
         assertFalse(componentUpdates[0].hasUpdatedLayoutDataChildren());
         
-        Component[] components = componentUpdates[0].getRemovedChildren();
-        assertEquals(1, components.length);
-        assertEquals(label1, components[0]);
+        Map components = componentUpdates[0].getRemovedChildren();
+        assertEquals(1, components.size());
+        assertEquals(label1, ((Map.Entry)components.entrySet().iterator().next()).getValue());
         
         manager.purge();
         
@@ -573,9 +578,9 @@ public class UpdateManagerTest extends TestCase  {
         assertEquals(Component.CHILD_VISIBLE_CHANGED_PROPERTY, componentUpdates[0].getUpdatedPropertyNames()[0]);
         assertFalse(componentUpdates[0].hasUpdatedLayoutDataChildren());
 
-        components = componentUpdates[0].getAddedChildren();
-        assertEquals(1, components.length);
-        assertEquals(label2, components[0]);
+        Component[] addedComponents = componentUpdates[0].getAddedChildren();
+        assertEquals(1, addedComponents.length);
+        assertEquals(label2, addedComponents[0]);
         
         label1.setVisible(true);
     }

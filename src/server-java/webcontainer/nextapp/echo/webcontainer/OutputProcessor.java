@@ -404,16 +404,14 @@ class OutputProcessor {
             Component parentComponent = componentUpdates[i].getParent();
             setComponentId(rmElement, parentComponent);
                 
-            Component[] removedChildren = componentUpdates[i].getRemovedChildren();
+            Map removedChildren = componentUpdates[i].getRemovedChildren();
             Set removedIdSet = new HashSet(); // Set containing removed ids, to avoid removing same id multiple times.
             StringBuffer out = new StringBuffer();
-            for (int j = 0; j < removedChildren.length; ++j) {
-                String renderId = removedChildren[j].getLastRenderId();
-                if (renderId != null) {
-                    renderId = userInstance.getWindowClientRenderId(renderId, Window.getActive());
-                } else {
-                    renderId = userInstance.getWindowClientRenderId(removedChildren[j], Window.getActive());
-                }
+            int j = 0;
+            for (Iterator it = removedChildren.entrySet().iterator(); it.hasNext();) {
+            	Map.Entry thisEntry = (Map.Entry)it.next();
+            	String renderId = (String)thisEntry.getKey();
+            	renderId = userInstance.getWindowClientRenderId(renderId, Window.getActive());
                 if (removedIdSet.contains(renderId)) {
                     continue;
                 }

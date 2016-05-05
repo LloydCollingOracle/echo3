@@ -30,6 +30,7 @@
 package nextapp.echo.app.update;
 
 import java.io.Serializable;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
@@ -55,6 +56,7 @@ implements Serializable {
 
     private static final Component[] EMPTY_COMPONENT_ARRAY = new Component[0];
     private static final String[] EMPTY_STRING_ARRAY = new String[0];
+    private static final Map EMPTY_COMPONENT_MAP = Collections.unmodifiableMap(Collections.EMPTY_MAP);
     
     /** The set of child <code>Component</code>s added to the <code>parent</code>. */
     private Set addedChildren;
@@ -65,11 +67,11 @@ implements Serializable {
     /**A mapping between property names of the <code>parent</code> component and <code>PropertyUpdate</code>s. */
     private Map propertyUpdates;
     
-    /** The set of child <code>Component</code>s removed from the <code>parent</code>. */
-    private Set removedChildren;
+    /** The Map of child renderIds to child <code>Component</code>s removed from the <code>parent</code>. */
+    private Map removedChildren;
     
     /** The set of descendant <code>Component</code>s which are implicitly removed as they were children of removed children. */
-    private Set removedDescendants;
+    private Map removedDescendants;
 
     /** The set of child <code>Component</code>s whose <code>LayoutData</code> was updated. */
     private Set updatedLayoutDataChildren;
@@ -127,16 +129,16 @@ implements Serializable {
         // Append removed descendants.
         if (update.removedDescendants != null) {
             if (removedDescendants == null) {
-                removedDescendants = new HashSet();
+                removedDescendants = new HashMap();
             }
-            removedDescendants.addAll(update.removedDescendants);
+            removedDescendants.putAll(update.removedDescendants);
         }
         // Append removed children.
         if (update.removedChildren != null) {
             if (removedDescendants == null) {
-                removedDescendants = new HashSet();
+                removedDescendants = new HashMap();
             }
-            removedDescendants.addAll(update.removedChildren);
+            removedDescendants.putAll(update.removedChildren);
         }
     }
     
@@ -172,11 +174,11 @@ implements Serializable {
      * @return the removed child components
      * @see #getRemovedDescendants()
      */
-    public Component[] getRemovedChildren() {
+    public Map getRemovedChildren() {
         if (removedChildren == null) {
-            return EMPTY_COMPONENT_ARRAY;
+            return EMPTY_COMPONENT_MAP;
         } else {
-            return (Component[]) removedChildren.toArray(new Component[removedChildren.size()]);
+            return Collections.unmodifiableMap(removedChildren);
         }
     }
     
@@ -192,11 +194,11 @@ implements Serializable {
      * @return the removed descendant components
      * @see #getRemovedChildren()
      */
-    public Component[] getRemovedDescendants() {
+    public Map getRemovedDescendants() {
         if (removedDescendants == null) {
-            return EMPTY_COMPONENT_ARRAY;
+            return EMPTY_COMPONENT_MAP;
         } else {
-            return (Component[]) removedDescendants.toArray(new Component[removedDescendants.size()]);
+            return Collections.unmodifiableMap(removedDescendants);
         }
     }
     
@@ -266,8 +268,8 @@ implements Serializable {
      * @param component the potentially removed child
      * @return true if the child was removed
      */
-    public boolean hasRemovedChild(Component component) {
-        return removedChildren != null && removedChildren.contains(component);
+    public boolean hasRemovedChild(String renderId) {
+        return removedChildren != null && removedChildren.containsKey(renderId);
     }
     
     /**
@@ -286,9 +288,9 @@ implements Serializable {
      * @param component the potentially removed child/descendant
      * @return true if the component is a removed child/descendant
      */
-    public boolean hasRemovedDescendant(Component component) {
-        return removedChildren != null && (removedChildren.contains(component) || 
-                (removedDescendants != null && removedDescendants.contains(component)));
+    public boolean hasRemovedDescendant(String renderId) {
+        return removedChildren != null && (removedChildren.containsKey(renderId) || 
+                (removedDescendants != null && removedDescendants.containsKey(renderId)));
     }
     
     /**
@@ -349,9 +351,9 @@ implements Serializable {
             updatedLayoutDataChildren.remove(child);
         }
         if (removedChildren == null) {
-            removedChildren = new HashSet();
+            removedChildren = new HashMap();
         }
-        removedChildren.add(child);
+        removedChildren.put(child.getRenderId(), child);
         
         Component[] descendants = child.getComponents();
         for (int i = 0; i < descendants.length; ++i) {
@@ -367,9 +369,9 @@ implements Serializable {
      */
     public void removeDescendant(Component descendant) {
         if (removedDescendants == null) {
-            removedDescendants = new HashSet();
+            removedDescendants = new HashMap();
         }
-        removedDescendants.add(descendant);
+        removedDescendants.put(descendant.getRenderId(), descendant);
         Component[] descendants = descendant.getComponents();
         for (int i = 0; i < descendants.length; ++i) {
             removeDescendant(descendants[i]);

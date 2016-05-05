@@ -119,10 +119,10 @@ public class Window extends Component {
     private Map renderIdToComponentMap;
     
     /**
-     * A list of components removed in the current request
+     * A map of component ids to component instances removed in the current request
      * @return
      */
-    private List componentsToRemove;
+    private Map componentsToRemove;
     
     /**
      * The current transactionId.  Used to ensure incoming ClientMessages reflect
@@ -661,9 +661,9 @@ public class Window extends Component {
      */
     void unregisterComponent(Component component) {
     	if (componentsToRemove == null) {
-    		componentsToRemove = new LinkedList();
+    		componentsToRemove = new HashMap();
     	}
-    	componentsToRemove.add(component);
+    	componentsToRemove.put(component.getRenderId(), component);
     }
         
     /**
@@ -671,13 +671,13 @@ public class Window extends Component {
      */
     public void processComponentRemovals() {
     	if (componentsToRemove != null) {
-    		Iterator i = componentsToRemove.iterator();
+    		Iterator i = componentsToRemove.entrySet().iterator();
     		while (i.hasNext()) {
-    			Component component = (Component)i.next();
-
-    	    	final String renderId = component.getRenderId();
+    			Map.Entry entry = (Map.Entry)i.next();
+    			String renderId = (String)entry.getKey();
+    			Component component = (Component)entry.getValue();
     	        component.assignLastRenderId(renderId);
-    	        renderIdToComponentMap.remove(renderId);
+    			renderIdToComponentMap.remove(renderId);
     	        if (component instanceof ModalSupport && ((ModalSupport) component).isModal()) {
     	            setModal(component, false);
     	        }
@@ -714,7 +714,7 @@ public class Window extends Component {
             }
 
             for (int i = 0; i < updates.length; ++i) {
-                if (updates[i].hasRemovedDescendant(component)) {
+                if (updates[i].hasRemovedDescendant(component.getRenderId())) {
                     it.remove();
                     continue;
                 }
