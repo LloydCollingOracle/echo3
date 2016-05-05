@@ -34,6 +34,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -118,11 +119,10 @@ public class Window extends Component {
     private Map renderIdToComponentMap;
     
     /**
-     * The next available sequentially generated 
-     * <code>Window</code>-unique identifier value.
-     * @see #generateId()
+     * A list of components removed in the current request
+     * @return
      */
-    private long nextId;
+    private List componentsToRemove;
     
     /**
      * The current transactionId.  Used to ensure incoming ClientMessages reflect
@@ -189,7 +189,7 @@ public class Window extends Component {
      * @see #generateSystemId()
      */
     public String generateId() {
-        return Long.toString(nextId++);
+        return getApplicationInstance().generateId();
     }
     
     /**
@@ -647,21 +647,44 @@ public class Window extends Component {
     }
 
     /**
-     * Unregisters a component from the <code>ApplicationInstance</code>.
+     * Enqueues a component to be unregistered from the <code>Window</code>.
      * <p>
-     * This method is invoked by <code>Component.setApplicationInstance()</code>.
+     * Component removals are enqueued in case the component is removed by one
+     * update and a later update references the component.
+     * </p>
+     * <p>
+     * This method is invoked by <code>Component.setContainingWindow()</code>.
+     * </p>
      * 
      * @param component the component to unregister
      * @see Component#register(ApplicationInstance)
      */
     void unregisterComponent(Component component) {
-    	final String renderId = component.getRenderId();
-        component.assignLastRenderId(renderId);
-        renderIdToComponentMap.remove(renderId);
-        if (component instanceof ModalSupport && ((ModalSupport) component).isModal()) {
-            setModal(component, false);
-        }
+    	if (componentsToRemove == null) {
+    		componentsToRemove = new LinkedList();
+    	}
+    	componentsToRemove.add(component);
     }
+        
+    /**
+     * Actually performs the unregister of each component.
+     */
+    public void processComponentRemovals() {
+    	if (componentsToRemove != null) {
+    		Iterator i = componentsToRemove.iterator();
+    		while (i.hasNext()) {
+    			Component component = (Component)i.next();
+
+    	    	final String renderId = component.getRenderId();
+    	        component.assignLastRenderId(renderId);
+    	        renderIdToComponentMap.remove(renderId);
+    	        if (component instanceof ModalSupport && ((ModalSupport) component).isModal()) {
+    	            setModal(component, false);
+    	        }
+    		}
+    		componentsToRemove = null;
+    	}
+     }
 
     /**
      * Retrieves the component currently registered with the application 

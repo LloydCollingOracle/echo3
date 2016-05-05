@@ -147,6 +147,7 @@ implements SynchronizationState {
                             ws[i].getUpdateManager().applyAsyncUpdates();
                         }
                     }
+                    ws[i].processComponentRemovals();
                 }
 
                 // if this window is closing, de-reference it so we don't leak memory
