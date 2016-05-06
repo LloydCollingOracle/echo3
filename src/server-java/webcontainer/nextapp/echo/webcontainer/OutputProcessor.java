@@ -761,6 +761,9 @@ class OutputProcessor {
      */ 
     private void renderComponentStyleName(Element element, Component c, boolean required) 
     throws SerialException {
+        if (c.getApplicationInstance() == null) {
+            return;
+        }
         StyleSheet styleSheet = c.getApplicationInstance().getStyleSheet();
         String styleName = c.getStyleName();
         

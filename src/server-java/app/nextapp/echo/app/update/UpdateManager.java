@@ -98,7 +98,9 @@ implements Serializable {
         window.processQueuedTasks();
         
         // Validate the state of the hierarchy prior to rendering.
-        window.getApplicationInstance().doValidation();
+        if (window.getApplicationInstance() != null) {
+            window.getApplicationInstance().doValidation();
+        }
     }
     
     /**

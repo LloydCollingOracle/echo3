@@ -478,10 +478,34 @@ public abstract class WebContainerServlet extends HttpServlet {
             service.service(conn);
             
         } catch (ServletException ex) {
+        	// an error from any window must destroy the user instance
+            if (conn != null) {
+                try {
+                	conn.disposeUserInstance();
+                } catch (RuntimeException ex2) {
+                    Log.log("Disposal of user instance due to exception in processing failed due to an error in disposal", ex2);
+                }
+            }
             processError(conn, request, response, ex);
         } catch (IOException ex) {
+        	// an error from any window must destroy the user instance
+            if (conn != null) {
+                try {
+                	conn.disposeUserInstance();
+                } catch (RuntimeException ex2) {
+                    Log.log("Disposal of user instance due to exception in processing failed due to an error in disposal", ex2);
+                }
+            }
             processError(conn, request, response, ex);
         } catch (RuntimeException ex) {
+        	// an error from any window must destroy the user instance
+            if (conn != null) {
+                try {
+                	conn.disposeUserInstance();
+                } catch (RuntimeException ex2) {
+                    Log.log("Disposal of user instance due to exception in processing failed due to an error in disposal", ex2);
+                }
+            }
             processError(conn, request, response, ex);
         } finally {
             activeConnection.set(null);

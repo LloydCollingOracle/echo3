@@ -381,6 +381,9 @@ public abstract class ApplicationInstance implements Serializable {
     }
     
     protected void removeWindow(Window window) {
+        // de-register the window and it's hierarchy
+        window.register(null, null);
+        
         // remove the window from the list of windows
         Window[] old = activeWindows;
         activeWindows = new Window[old.length - 1];
