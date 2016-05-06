@@ -562,7 +562,7 @@ public class UserInstance implements Serializable {
      */
     public void setTaskQueueCallbackInterval(TaskQueueHandle taskQueue, int ms) {
         if (taskQueueToCallbackIntervalMap == null) {
-            taskQueueToCallbackIntervalMap = new WeakHashMap();
+            taskQueueToCallbackIntervalMap = Collections.synchronizedMap(new WeakHashMap());
         }
         taskQueueToCallbackIntervalMap.put(taskQueue, new Integer(ms));
     }
