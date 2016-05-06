@@ -86,7 +86,9 @@ implements Service {
     public static final WindowHtmlService INSTANCE = new WindowHtmlService();
     
     private static final String INITIAL_DOCUMENT_CLASS_PATH_LOCATION = "Echo3ApplicationDocument.html";
-
+    
+    private String networkOutageMsg;
+    
     /**
      * Create a new root window HTML document.
      * 
@@ -117,7 +119,7 @@ implements Service {
             try {
                 document = DomUtil.loadDocument(Thread.currentThread()
                         .getContextClassLoader().getResourceAsStream(
-                        		INITIAL_DOCUMENT_CLASS_PATH_LOCATION));
+                                INITIAL_DOCUMENT_CLASS_PATH_LOCATION));
             } catch (IOException e) {
                 e.printStackTrace();
             } catch (SAXException e) {
@@ -205,6 +207,14 @@ implements Service {
         scriptElement.setAttribute("type", "text/javascript");
         scriptElement.setAttribute("src", userInstanceContainer.getServiceUri(BootService.SERVICE, null));
         headElement.appendChild(scriptElement);
+        
+        // If a request to the server fails due to a dropped connection / inaccessible server then we show 
+        // a network outage message, asking the user to retry.
+        Element globalVarsScriptElement = document.createElement("script");
+        Text networkOutageMsgTextNode = document.createTextNode("var networkOutageMsg = \"" + getNetworkOutageMsg() + "\";");
+        globalVarsScriptElement.appendChild(networkOutageMsgTextNode);
+        globalVarsScriptElement.setAttribute("type", "text/javascript");
+        headElement.appendChild(globalVarsScriptElement);
 
         WebContainerServlet servlet = conn.getServlet();
         
@@ -321,4 +331,13 @@ implements Service {
             throw new SynchronizationException("Failed to write HTML document.", ex);
         }
     }
+
+    public void setNetworkOutageMsg(String networkOutageMsg) {
+        this.networkOutageMsg = networkOutageMsg;
+    }
+
+    public String getNetworkOutageMsg() {
+        return networkOutageMsg;
+    }
+
 }

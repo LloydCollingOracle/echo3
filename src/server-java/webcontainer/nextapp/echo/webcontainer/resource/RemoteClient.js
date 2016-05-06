@@ -137,6 +137,19 @@ Echo.RemoteClient = Core.extend(Echo.Client, {
      * @type Number
      */
     transactionId: 0,
+    
+    /**
+     * Flag indicating if we need to show network outage alert
+     * , to stop multiple alerts appearing
+     * @type Boolean
+     */
+    _showNextNetworkOutageMsg: true,
+    
+    /**
+     * Last Client Message
+     * @type Echo.RemoteClient.ClientMessage
+     */
+    _lastClientMessage: null,
 
     /**
      * Events waiting for process.
@@ -316,7 +329,40 @@ Echo.RemoteClient = Core.extend(Echo.Client, {
     },
 
     /**
-     * Handles an invalid response from the server.
+     * Handles an invalid poll response from the server.
+     * 
+     * @param e the HttpConnection response event
+     */
+    _handleInvalidPollResponse: function(e) {
+        var detail = null;
+        if (e.exception) {
+            detail = e.exception.toString();
+        } else if (e.source.getResponseText()) {
+            if (e.source.getResponseText().indexOf("!*! Session Expired") != -1) {
+                this._handleSessionExpiration();
+                return;
+            } else {
+                detail = e.source.getResponseText();
+            }
+        }
+        
+        if (detail != null) {
+        	this.fail(detail);
+        } else {
+        	// no exception or response text means no response due to network, so show alert
+	        if (this._showNextNetworkOutageMsg) {
+	        	this._showNextNetworkOutageMsg = false;
+	        	var box = alert(networkOutageMsg);
+	        	// reset the _showNextNetworkOutageMsg flag once user clicks OK on the alert box
+	        	if (!box) {
+	        		this._showNextNetworkOutageMsg = true;
+	        	}
+	        }
+        }
+    },
+    
+    /**
+     * Handles an invalid sync response from the server.
      * 
      * @param e the HttpConnection response event
      */
@@ -342,7 +388,22 @@ Echo.RemoteClient = Core.extend(Echo.Client, {
             this._handleNetworkError();
             return;
         }
-        this.fail(detail);
+        if (detail != null) {
+        	this.fail(detail);
+        } else {
+        	// no exception or response text means no response due to network, so show alert
+	        if (this._showNextNetworkOutageMsg) {
+	        	this._showNextNetworkOutageMsg = false;
+	        	var box = alert(networkOutageMsg);
+	        	// reset the _showNextNetworkOutageMsg flag once user clicks OK on the alert box
+	        	// and sync the last client message again
+	        	if (!box) {
+	        		this._showNextNetworkOutageMsg = true;
+	        		this._clientMessage = this._lastClientMessage;
+	        		Core.Web.Scheduler.run(Core.method(this, this.sync));
+	        	}
+	        }
+        }
     },
     
     /**
@@ -574,7 +635,8 @@ Echo.RemoteClient = Core.extend(Echo.Client, {
         
         // Verify that response document exists and is valid.
         if (!e.valid || !responseDocument || !responseDocument.documentElement) {
-            this._handleInvalidResponse(e); 
+            this._transactionInProgress = false;
+            this._handleInvalidResponse(e);
             return;
         }
         
@@ -643,7 +705,7 @@ Echo.RemoteClient = Core.extend(Echo.Client, {
                     "event data: componentId=" + this._clientMessage._eventComponentId + " eventType=" + 
                     this._clientMessage._eventType + " eventData=" + this._clientMessage._eventData);  
         }
-    
+        
         this._clientFocusedComponent = this.application ? this.application.getFocusedComponent() : null;
         if (this.application && this._clientFocusedComponent && 
                 (this._clientFocusedComponent.componentType === "E2RTA" || 
@@ -665,6 +727,8 @@ Echo.RemoteClient = Core.extend(Echo.Client, {
 
         var conn = new Core.Web.HttpConnection(this.getServiceUrl("Echo.Sync"), "POST",
                 this._clientMessage._renderXml(), "text/xml;charset=utf-8");
+        
+        this._lastClientMessage = this._clientMessage;
         
         // Create new client message.
         this._clientMessage = new Echo.RemoteClient.ClientMessage(this, null, null);
@@ -965,8 +1029,8 @@ Echo.RemoteClient.HTTPAsyncManager = Core.extend(Echo.RemoteClient.AbstractAsync
                 return;
             }
         } else if (++this._failedConnectAttempts >= Echo.RemoteClient.AbstractAsyncManager.MAX_CONNECT_ATTEMPTS) {
-            this._client._handleInvalidResponse(e); 
-            this._failedConnectAttempts = 0;
+        	this._client._handleInvalidPollResponse(e); 
+        	this._start();
             return;
         }
         
