@@ -93,7 +93,7 @@ public abstract class AbstractConnection {
      * Disposes of the <code>UserInstance</code> associated with this 
      * <code>Connection</code>.
      */
-    void disposeUserInstance() {
+    public void disposeUserInstance() {
         if (userInstanceContainer != null && userInstance != null) {
             userInstanceContainer.unloadUserInstance(userInstance);
         }

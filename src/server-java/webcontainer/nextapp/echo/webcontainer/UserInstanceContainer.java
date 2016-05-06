@@ -111,6 +111,15 @@ implements HttpSessionActivationListener, HttpSessionBindingListener, Serializab
     }
     
     /**
+     * Whether this container still has at least one UserInstance that is preparing
+     * to start up, or is already started.
+     * @return
+     */
+    public synchronized boolean hasActiveInstances() {
+        return initIdToInitialRequestParameterMap.size() > 0 || clientWindowIdToUserInstance.size() > 0;
+    }
+    
+    /**
      * Creates or retrieves a <code>UserInstance</code> for the specified client window identifier and 
      * initial request identifier.  Invoked when a window is loaded for the first time or reloaded.
      * 
@@ -140,7 +149,7 @@ implements HttpSessionActivationListener, HttpSessionBindingListener, Serializab
             } else {
                 uiid = null;
             }
-            Map initialRequestParameterMap = (Map) initIdToInitialRequestParameterMap.remove(initId);
+            Map initialRequestParameterMap = (Map) initIdToInitialRequestParameterMap.remove(uiid);
             userInstance = createUserInstance(uiid, clientWindowId, initialRequestParameterMap); 
             clientWindowIdToUserInstance.put(clientWindowId, userInstance);
             idToUserInstance.put(userInstance.getId(), userInstance);
