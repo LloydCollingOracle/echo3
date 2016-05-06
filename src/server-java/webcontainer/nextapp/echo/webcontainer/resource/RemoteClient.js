@@ -430,6 +430,19 @@ Echo.RemoteClient = Core.extend(Echo.Client, {
     
     _processPrendingClientEvent: function(e) {
         this._clientMessage.setEvent(e.source.renderId, e.type, e.data);
+        // call beforeSync member on all components prior to a sync.
+        if (this.application) {
+           var comps = [this.application.rootComponent];
+           while (comps.length > 0) {
+               var currComp = comps.pop();
+               if (currComp.beforeSync) {
+                   currComp.beforeSync();
+               }
+               for (var i = 0; i < currComp.getComponentCount(); i++) {
+                   comps.push(currComp.getComponent(i));
+               }
+           }
+       }
         this._syncRequested = true;
         Core.Web.Scheduler.run(Core.method(this, this.sync));
 
@@ -632,6 +645,11 @@ Echo.RemoteClient = Core.extend(Echo.Client, {
         }
     
         this._clientFocusedComponent = this.application ? this.application.getFocusedComponent() : null;
+        if (this.application && this._clientFocusedComponent && 
+                (this._clientFocusedComponent.componentType === "E2RTA" || 
+                        this._clientFocusedComponent.componentType === "Ext20RichTextArea")) {
+             this.application.focusNext();
+        }
         this._serverFocusedComponent = null;
         
         this._transactionInProgress = true;
