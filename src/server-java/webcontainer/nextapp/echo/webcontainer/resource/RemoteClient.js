@@ -352,10 +352,12 @@ Echo.RemoteClient = Core.extend(Echo.Client, {
         	// no exception or response text means no response due to network, so show alert
 	        if (this._showNextNetworkOutageMsg) {
 	        	this._showNextNetworkOutageMsg = false;
-	        	var box = alert(networkOutageMsg);
+	        	var confirmPollOutage = confirm(networkOutageMsg);
 	        	// reset the _showNextNetworkOutageMsg flag once user clicks OK on the alert box
-	        	if (!box) {
+	        	if (confirmPollOutage == true) {
 	        		this._showNextNetworkOutageMsg = true;
+	        	} else {
+	        		this.fail(detail);
 	        	}
 	        }
         }
@@ -394,13 +396,15 @@ Echo.RemoteClient = Core.extend(Echo.Client, {
         	// no exception or response text means no response due to network, so show alert
 	        if (this._showNextNetworkOutageMsg) {
 	        	this._showNextNetworkOutageMsg = false;
-	        	var box = alert(networkOutageMsg);
+	        	var confirmSyncOutage = confirm(networkOutageMsg);
 	        	// reset the _showNextNetworkOutageMsg flag once user clicks OK on the alert box
 	        	// and sync the last client message again
-	        	if (!box) {
+	        	if (confirmSyncOutage == true) {
 	        		this._showNextNetworkOutageMsg = true;
 	        		this._clientMessage = this._lastClientMessage;
 	        		Core.Web.Scheduler.run(Core.method(this, this.sync));
+	        	} else {
+	        		this.fail(detail);
 	        	}
 	        }
         }
