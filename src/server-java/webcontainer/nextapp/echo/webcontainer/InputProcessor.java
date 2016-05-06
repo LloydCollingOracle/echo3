@@ -32,6 +32,7 @@ package nextapp.echo.webcontainer;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.util.regex.Pattern;
 
 import org.w3c.dom.Document;
 import org.xml.sax.SAXException;
@@ -52,6 +53,9 @@ import nextapp.echo.webcontainer.util.XmlRequestParser;
  */
 public class InputProcessor {
     
+    /** Regular expression for validating window identifier. */
+    private static final Pattern WINDOW_ID_PATTERN = Pattern.compile("([0-9a-f_]*.[0-9a-f_]*)");
+        
     static {
         ClientMessage.register("CSync", ComponentInputProcessor.class);
         ClientMessage.register("ClientProperties", ClientPropertiesInputProcessor.class);
@@ -149,6 +153,10 @@ public class InputProcessor {
                 Log.log("Application Instance ID on session does not match ID of active instance.  ID on session=" + conn.getRequest().getSession().getAttribute("applicationInstanceId") + ".  ID of Application Instance=" + appInstance.getContextProperty("applicationInstanceId"));
             }
         }
+        // Validate window identifier to prevent malicious use
+        if (!WINDOW_ID_PATTERN.matcher(clientMessage.getApplicationWindowId()).matches()) {
+            throw new IllegalArgumentException("Illegal window identifier received: " + cleanseString(clientMessage.getApplicationWindowId()));
+        }
         Window.setActive(appInstance.getWindow(clientMessage.getApplicationWindowId()));
         if (Window.getActive() == null) {
             throw new RuntimeException("Request received for unknown window: " + clientMessage.getApplicationWindowId());
@@ -196,5 +204,19 @@ public class InputProcessor {
             // Only process the client message if client/server are synchronized.
             clientMessage.process(context);
         }
+    }
+    
+    private String cleanseString(final String stringForCleansing) {
+        StringBuilder validatedString = new StringBuilder();
+        char[] charArray = stringForCleansing.toCharArray();
+        for (int i=0; i < charArray.length; i++) {
+            if (Character.isUnicodeIdentifierPart(charArray[i])) {
+                validatedString.append(charArray[i]);
+            }
+            else {
+                validatedString.append("_");
+            }
+        }
+        return validatedString.toString();
     }
 }
