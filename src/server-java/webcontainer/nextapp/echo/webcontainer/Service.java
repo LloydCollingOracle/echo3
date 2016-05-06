@@ -47,6 +47,12 @@ public interface Service {
      * service should not be cached.
      */
     public static final int DO_NOT_CACHE = -1;
+    /**
+     * A value returned by <code>getVersion()</code> to indicate that a
+     * service should avoid the IE HTTPS no-cache bug as detailed on
+     * https://support.microsoft.com/en-gb/kb/323308
+     */
+    public static final int IE_HTTPS_CACHE_ONLY = -2;
     
     /**
      * Returns the unique identifier of this service.
