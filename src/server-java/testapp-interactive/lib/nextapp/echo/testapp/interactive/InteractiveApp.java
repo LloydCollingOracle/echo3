@@ -164,7 +164,7 @@ public class InteractiveApp extends ApplicationInstance {
     /**
      * @see nextapp.echo.app.ApplicationInstance#init()
      */
-    public Window init(Map parameters) {
+    public Window init() {
         ContainerContext cc = (ContainerContext) getContextProperty(ContainerContext.CONTEXT_PROPERTY_NAME);
         clientPropertiesAvailableAtInit = cc != null && cc.getClientProperties() != null;
         

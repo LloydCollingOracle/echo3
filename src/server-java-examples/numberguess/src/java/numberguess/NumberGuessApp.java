@@ -67,7 +67,7 @@ public class NumberGuessApp extends ApplicationInstance {
     /**
      * @see nextapp.echo.app.ApplicationInstance#init()
      */
-    public Window init(Map parameters) {
+    public Window init() {
         window = new Window(this);
         window.setTitle("Echo Guess-A-Number");
         startNewGame();

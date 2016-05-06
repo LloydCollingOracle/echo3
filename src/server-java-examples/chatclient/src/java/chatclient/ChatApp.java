@@ -237,7 +237,7 @@ public class ChatApp extends ApplicationInstance {
     /**
      * @see nextapp.echo.app.ApplicationInstance#init()
      */
-    public Window init(Map parameters) {
+    public Window init() {
         setStyleSheet(Styles.DEFAULT_STYLE_SHEET);
         Window window = new Window(this);
         window.setTitle(Messages.getString("Application.Title.Window"));

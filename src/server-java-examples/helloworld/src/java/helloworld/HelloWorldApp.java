@@ -15,7 +15,7 @@ public class HelloWorldApp extends ApplicationInstance {
     /**
      * @see nextapp.echo.app.ApplicationInstance#init()
      */
-    public Window init(Map parameters) {
+    public Window init() {
         Window window = new Window(this);
 
         ContentPane contentPane = new ContentPane();
