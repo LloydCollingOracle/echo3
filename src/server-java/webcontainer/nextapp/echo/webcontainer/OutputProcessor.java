@@ -214,7 +214,7 @@ class OutputProcessor {
      * Renders asynchronous callback settings to server message.
      */
     private void renderAsyncState() {
-        if (Window.getActive().hasTaskQueues()) {
+        if (Window.getActive().hasTaskQueues() && userInstance.getApplicationInstance().getActiveWindows().length > 1) {
             serverMessage.setAttribute("async-interval", Integer.toString(userInstance.getCallbackInterval()));
             serverMessage.setAttribute("ws-enable", Boolean.toString(conn.getServlet().hasWebSocketConnectionHandler()));
         }
