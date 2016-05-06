@@ -491,10 +491,20 @@ implements RenderIdSupport, Serializable {
             init();
             flags |= FLAG_INITIALIZED;
             if (children != null) {
-                Iterator it = children.iterator();
-                while (it.hasNext()) {
-                    ((Component) it.next()).doInit();
+
+
+                // get a copy of the list of children to avoid ConcurrentModificationException
+                Object[] copy = children.toArray();
+                for (int i=0; i < copy.length; i++) {
+                        ((Component)copy[i]).doInit();
                 }
+/*
+		Original code
+		Iterator iterator = children.iterator();
+		while (iterator.hasNext()) {
+			((Component)iterator.next()).doInit();
+		}
+*/
             }
         } finally {
             flags &= ~FLAG_INIT_IN_PROGRESS;
