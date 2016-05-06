@@ -49,7 +49,7 @@ public class ModalTest extends TestCase {
     public void setUp() {
         app = new ColumnApp();
         ApplicationInstance.setActive(app);
-        app.doInit(null, true, "windowId");
+        app.doInit(true, "windowId");
     }
     
     /**

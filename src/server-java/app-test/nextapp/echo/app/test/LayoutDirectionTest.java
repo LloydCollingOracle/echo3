@@ -54,7 +54,7 @@ public class LayoutDirectionTest extends TestCase {
     public void setUp() {
         app = new ColumnApp();
         ApplicationInstance.setActive(app);        
-        app.doInit(null, true, "windowId");
+        app.doInit(true, "windowId");
     }
     
     /**

@@ -75,7 +75,7 @@ public class UpdateManagerTest extends TestCase  {
     public void setUp() {
         columnApp = new ColumnApp();
         ApplicationInstance.setActive(columnApp);        
-        columnApp.doInit(null, true, "windowId");
+        columnApp.doInit(true, "windowId");
         manager = columnApp.getWindow(0).getUpdateManager();
     }
     

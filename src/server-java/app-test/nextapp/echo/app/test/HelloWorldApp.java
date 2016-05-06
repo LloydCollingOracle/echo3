@@ -48,7 +48,7 @@ class HelloWorldApp extends ApplicationInstance {
     /**
      * @see nextapp.echo.app.ApplicationInstance#init()
      */
-    public Window init(Map parameters) {
+    public Window init() {
         window = new Window(this);
         content = window.getContent();
         label = new Label("Hello, world!");

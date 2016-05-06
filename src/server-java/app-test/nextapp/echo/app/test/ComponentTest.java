@@ -327,7 +327,7 @@ public class ComponentTest extends TestCase {
     public void testLifecycleSingleComponent() {
         ColumnApp app = new ColumnApp();
         ApplicationInstance.setActive(app);
-        app.doInit(null, true, "windowId");
+        app.doInit(true, "windowId");
         
         LifecycleTestComponent ltc1 = new LifecycleTestComponent();
         assertEquals(0, ltc1.getInitCount());
@@ -361,7 +361,7 @@ public class ComponentTest extends TestCase {
     public void testLifecycleComponentHierarchy() {
         ColumnApp app = new ColumnApp();
         ApplicationInstance.setActive(app);
-        app.doInit(null, true, "windowId");
+        app.doInit(true, "windowId");
         
         LifecycleTestComponent ltc1 = new LifecycleTestComponent();
         LifecycleTestComponent ltc2 = new LifecycleTestComponent();
@@ -431,7 +431,7 @@ public class ComponentTest extends TestCase {
     public void testLifecycleRemoveDuringInit() {
         ColumnApp app = new ColumnApp();
         ApplicationInstance.setActive(app);
-        app.doInit(null, true, "windowId");
+        app.doInit(true, "windowId");
         
         LifecycleTestComponent special = new LifecycleTestComponent(){
         
@@ -459,7 +459,7 @@ public class ComponentTest extends TestCase {
     public void testLifecycleAddDuringDispose() {
         ColumnApp app = new ColumnApp();
         ApplicationInstance.setActive(app);
-        app.doInit(null, true, "windowId");
+        app.doInit(true, "windowId");
         
         LifecycleTestComponent special = new LifecycleTestComponent(){
         
@@ -566,7 +566,7 @@ public class ComponentTest extends TestCase {
     public void testRenderId() {
         ColumnApp app1 = new ColumnApp();
         ApplicationInstance.setActive(app1);
-        app1.doInit(null, true, "windowId");
+        app1.doInit(true, "windowId");
         NullComponent component1 = new NullComponent();
         assertNull(component1.getRenderId());
         app1.getColumn().add(component1);
@@ -576,7 +576,7 @@ public class ComponentTest extends TestCase {
 
         ColumnApp app2 = new ColumnApp();
         ApplicationInstance.setActive(app2);
-        app2.doInit(null, true, "windowId");
+        app2.doInit(true, "windowId");
         NullComponent component2 = new NullComponent();
         assertNull(component2.getRenderId());
         app2.getColumn().add(component2);
@@ -604,7 +604,7 @@ public class ComponentTest extends TestCase {
     public void testRenderEnabled() {
         ColumnApp app = new ColumnApp();
         ApplicationInstance.setActive(app);
-        app.doInit(null, true, "windowId");
+        app.doInit(true, "windowId");
         assertTrue(app.getContentPane().isRenderEnabled());
         assertTrue(app.getColumn().isRenderEnabled());
         assertTrue(app.getLabel().isRenderEnabled());
@@ -633,7 +633,7 @@ public class ComponentTest extends TestCase {
     public void testRenderVisible() {
         ColumnApp app = new ColumnApp();
         ApplicationInstance.setActive(app);
-        app.doInit(null, true, "windowId");
+        app.doInit(true, "windowId");
         assertTrue(app.getContentPane().isRenderVisible());
         assertTrue(app.getColumn().isRenderVisible());
         assertTrue(app.getLabel().isRenderVisible());

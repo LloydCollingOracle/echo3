@@ -222,14 +222,14 @@ public abstract class ApplicationInstance implements Serializable {
      * @throws IllegalStateException in the event that the current thread is not
      *         permitted to update the state of the user interface
      */
-    public final Window doInit(Map parameters, boolean allowAsyncWindowUpdates, String defaultWindowId) {
+    public final Window doInit(boolean allowAsyncWindowUpdates, String defaultWindowId) {
         if (this != activeInstance.get()) {
             throw new IllegalStateException(
                     "Attempt to update state of application user interface outside of user interface thread.");
         }
         this.allowAsyncWindowUpdates = allowAsyncWindowUpdates;
         this.defaultWindowId = defaultWindowId;
-        Window window = init(parameters);
+        Window window = init();
         addWindow(window);
         doValidation();
         return window;
@@ -358,10 +358,9 @@ public abstract class ApplicationInstance implements Serializable {
      * Invoked to initialize the default top-level window of the application.
      * The returned window must be visible.
      *
-     * @param parameters The initial parameters passed via the connection url
      * @return the default top-level window of the application
      */
-    public abstract Window init(Map parameters);
+    public abstract Window init();
     
     /**
      * Invoked before the application is passivated (such that its state may

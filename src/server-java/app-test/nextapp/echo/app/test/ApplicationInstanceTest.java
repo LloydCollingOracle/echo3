@@ -105,7 +105,7 @@ public class ApplicationInstanceTest extends TestCase {
         ColumnApp columnApp = new ColumnApp();
         ApplicationInstance.setActive(columnApp);
         
-        Window window = columnApp.doInit(null, true, "windowId");
+        Window window = columnApp.doInit(true, "windowId");
         assertTrue(window.isRegistered());
         assertTrue(columnApp.getColumn().isRegistered());
         Label label = new Label();
@@ -129,7 +129,7 @@ public class ApplicationInstanceTest extends TestCase {
     public void testRegistrationLifecycle() {
         ColumnApp columnApp = new ColumnApp();
         ApplicationInstance.setActive(columnApp);
-        columnApp.doInit(null, true, "windowId");
+        columnApp.doInit(true, "windowId");
         Column column = columnApp.getColumn();
 
         RegistrationTestComponent rtc = new RegistrationTestComponent();
@@ -163,14 +163,14 @@ public class ApplicationInstanceTest extends TestCase {
         
         ColumnApp columnApp = new ColumnApp(){
         
-            public Window init(Map parameters) {
-                Window window = super.init(parameters);
+            public Window init() {
+                Window window = super.init();
                 getColumn().add(rtc);
                 return window;
             }
         };
         ApplicationInstance.setActive(columnApp);
-        columnApp.doInit(null, true, "windowId");
+        columnApp.doInit(true, "windowId");
 
         assertEquals(1, rtc.initCount);
         assertEquals(0, rtc.disposeCount);
@@ -185,8 +185,8 @@ public class ApplicationInstanceTest extends TestCase {
     public void testValidation() {
         final ValidatingLabel validatingLabel = new ValidatingLabel();
         ColumnApp app = new ColumnApp() {
-            public Window init(Map parameters) {
-                Window window = super.init(parameters);
+            public Window init() {
+                Window window = super.init();
                 getColumn().add(validatingLabel);
                 return window;
             }
@@ -196,7 +196,7 @@ public class ApplicationInstanceTest extends TestCase {
         
         ApplicationInstance.setActive(app);
         
-        app.doInit(null, true, "windowId");
+        app.doInit(true, "windowId");
         
         // Test for initial validation.
         assertTrue(validatingLabel.valid);

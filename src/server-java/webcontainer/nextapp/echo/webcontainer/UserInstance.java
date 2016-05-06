@@ -504,7 +504,6 @@ public class UserInstance implements Serializable {
         if (!applicationInitialized) {
             try {
                 applicationInstance.doInit(
-                    WebContainerServlet.getActiveConnection().getRequest().getParameterMap(), 
                     WebContainerServlet.getActiveConnection().getServlet().getAllowAsyncWindowUpdates(),
                     applicationWindowId
                 );
