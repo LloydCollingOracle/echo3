@@ -143,6 +143,12 @@ public class InputProcessor {
     public void process() 
     throws IOException {
         ApplicationInstance appInstance = ApplicationInstance.getActive();
+        // log unusual application instance id
+        if (conn.getRequest().getSession().getAttribute("applicationInstanceId") != null) {
+            if (!conn.getRequest().getSession().getAttribute("applicationInstanceId").equals(appInstance.getContextProperty("applicationInstanceId"))) {
+                Log.log("Application Instance ID on session does not match ID of active instance.  ID on session=" + conn.getRequest().getSession().getAttribute("applicationInstanceId") + ".  ID of Application Instance=" + appInstance.getContextProperty("applicationInstanceId"));
+            }
+        }
         Window.setActive(appInstance.getWindow(clientMessage.getApplicationWindowId()));
         if (Window.getActive() == null) {
             throw new RuntimeException("Request received for unknown window: " + clientMessage.getApplicationWindowId());
