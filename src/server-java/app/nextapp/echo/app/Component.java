@@ -283,9 +283,10 @@ implements RenderIdSupport, Serializable, LabelProvider {
     private String renderId;
     
     /**
-     * <b>Last active renderId!</b>
-     * <br />
+     * <p><b>Last active renderId!</b></p>
+     * <p>
      * Set when component is unregistering from application instance!
+     * </p>
      * @see #renderId
      */
     private String lastRenderId;

@@ -54,7 +54,7 @@ implements Serializable {
      * <strong>Warning:</strong> the creator must take care to invoke the
      * <code>dispose()</code> method before dereferencing this object.
      * 
-     * @param applicationInstance the <code>ApplicationInstance</code> which
+     * @param window the <code>Window</code> which
      *        this manager will service
      */
     public UpdateManager(Window window) {

@@ -14,7 +14,7 @@ public interface EditableTableModel extends TableModel {
      * 
      * @param newValue
      *            the new value
-     * @param column
+     * @param col
      *            the column index
      * @param row
      *            the row index

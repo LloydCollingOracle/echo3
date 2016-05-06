@@ -45,7 +45,7 @@ public class ComponentFocusInputProcessor
 implements ClientMessage.Processor {
 
     /**
-     * @see nextapp.echo.webcontainer.ClientMessage.Processor#process(nextapp.echo.app.util.Context, org.w3c.dom.Element)
+     * @see nextapp.echo.webcontainer.ClientMessage.Processor#process(nextapp.echo.app.util.Context, org.w3c.dom.Element, java.lang.String)
      */
     public void process(Context context, Element dirElement, String applicationWindowId) 
     throws IOException {

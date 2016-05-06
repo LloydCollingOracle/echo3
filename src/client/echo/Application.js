@@ -1457,10 +1457,10 @@ Echo.FocusManager = Core.extend({
         		return null;
         	}
         } else {
-        	var pc = component.focusNextComponent();
-        	if (pc != null) {
-        		return pc;
-        	} else if (pc === true) {
+        	var pc2 = component.focusNextComponent();
+        	if (pc2 != null) {
+        		return pc2;
+        	} else if (pc2 === true) {
         		return null;
         	}
         }

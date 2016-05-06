@@ -502,8 +502,9 @@ Echo.Client = Core.extend({
         }
         this._failed = true;
         var element = this.domainElement;
-        if (element == null)
+        if (element == null) {
             element = document.body;
+        }
         
         try {
             // Attempt to dispose.

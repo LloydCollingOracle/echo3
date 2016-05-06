@@ -287,7 +287,7 @@ public class UserInstance implements Serializable {
 	* Returns the client-side render id that should be used when rendering the
 	* specified <code>Component</code>.
 	* 
-	* @param component the component
+	* @param renderId the component renderId
 	* @param w the window the component is/was associated with
 	* @return the client-side render id
 	*/

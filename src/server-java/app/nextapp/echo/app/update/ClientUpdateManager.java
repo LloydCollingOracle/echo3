@@ -70,7 +70,7 @@ implements Serializable {
     /**
      * Creates a new <Code>ClientUpdateManager</code>.
      * 
-     * @param applicationInstance the <code>ApplicationInstance</code> being supported
+     * @param window the <code>Window</code> being supported
      */
     ClientUpdateManager(Window window) {
         this.window = window;

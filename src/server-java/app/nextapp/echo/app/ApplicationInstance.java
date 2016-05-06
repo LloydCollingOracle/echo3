@@ -66,7 +66,6 @@ public abstract class ApplicationInstance implements Serializable {
      * <code>ApplicationInstance</code>s).
      * 
      * @return the generated identifier
-     * @see #generateId()
      */
     public static final String generateSystemId() {
         return Uid.generateUidString();
@@ -212,10 +211,10 @@ public abstract class ApplicationInstance implements Serializable {
      * Initializes the <code>ApplicationInstance</code>. This method is
      * invoked by the application container.
      * 
-     * @param parameters The parameters initially passed to the application
      * @param allowAsyncWindowUpdates Whether asynchronous updates will be 
      *                                automatically handled in a multiple window 
      *                                situation
+     * @param defaultWindowId The identifier of the main application window
      * @return the default <code>Window</code> of the application
      * @throws IllegalStateException in the event that the current thread is not
      *         permitted to update the state of the user interface
@@ -287,6 +286,7 @@ public abstract class ApplicationInstance implements Serializable {
     /**
      * Returns a window of the application.
      * 
+     * @param index The index of the window to retrieve
      * @return the <code>Window</code>
      */
     public Window getWindow(int index) {
@@ -575,7 +575,7 @@ public abstract class ApplicationInstance implements Serializable {
     
     /**
      * Returns the currently active windows of an application
-     * @return
+     * @return The array of active windows
      */
     public Window[] getActiveWindows() {
         Window[] ret = new Window[activeWindows.length];
@@ -587,7 +587,7 @@ public abstract class ApplicationInstance implements Serializable {
 
     /**
      * Returns the both active and inactive windows of an application
-     * @return
+     * @return The array of active and inactive/closing windows
      */
     public Window[] getWindows() {
         Window[] ret = null;

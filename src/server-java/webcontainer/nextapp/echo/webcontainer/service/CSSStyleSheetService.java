@@ -43,8 +43,6 @@ public class CSSStyleSheetService implements Service, StringVersionService {
      *            the <code>Service</code> identifier
      * @param resourceName
      *            the path to the content resource in the <code>CLASSPATH</code>
-     * @param relativePath
-     *            the relative path to the stylesheet from the servlet
      * @return the created <code>CSSStyleSheetService</code>
      */
     public static CSSStyleSheetService forResource(String id,
@@ -87,8 +85,6 @@ public class CSSStyleSheetService implements Service, StringVersionService {
      *            the <code>Service</code> identifier
      * @param resourceName
      *            the path to the content resource in the <code>CLASSPATH</code>
-     * @param relativePath
-     *            the relative path to the stylesheet from the servlet
      * @param media
                   the supported media
      * @return the created <code>CSSStyleSheetService</code>

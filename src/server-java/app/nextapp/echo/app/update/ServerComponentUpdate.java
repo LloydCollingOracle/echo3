@@ -265,7 +265,7 @@ implements Serializable {
     /**
      * Determines if the specified child was removed from the parent component.
      * 
-     * @param component the potentially removed child
+     * @param renderId the potentially removed child
      * @return true if the child was removed
      */
     public boolean hasRemovedChild(String renderId) {
@@ -285,7 +285,7 @@ implements Serializable {
     /**
      * Determines if the specified component is a removed child or descendant of the parent component.
      * 
-     * @param component the potentially removed child/descendant
+     * @param renderId the potentially removed child/descendant
      * @return true if the component is a removed child/descendant
      */
     public boolean hasRemovedDescendant(String renderId) {

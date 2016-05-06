@@ -120,7 +120,6 @@ public class Window extends Component {
     
     /**
      * A map of component ids to component instances removed in the current request
-     * @return
      */
     private Map componentsToRemove;
     
@@ -203,7 +202,6 @@ private long nextId;
      * used outside of the context of this  <code>ApplicationInstance</code>.
      * 
      * @return the unique identifier
-     * @see #generateSystemId()
      */
     public String generateId() {
         return Long.toString(nextId++);
@@ -313,7 +311,6 @@ private long nextId;
     /**
      * Returns the presently focused component, if known.
      * 
-     * @param applicationInstance TODO
      * @return the focused component
      */
     public Component getFocusedComponent() {
@@ -366,7 +363,6 @@ private long nextId;
      * 
      * @return a <code>TaskQueueHandler</code> representing the created task 
      *         queue
-     * @param applicationInstance TODO
      * @see #removeTaskQueue(TaskQueueHandle)
      */
     public TaskQueueHandle createTaskQueue() {
@@ -481,7 +477,6 @@ private long nextId;
      * 
      * @param taskQueueHandle the <code>TaskQueueHandle</code> specifying the
      *        task queue to remove
-     * @see #MISSING()
      */
     public void removeTaskQueue(TaskQueueHandle taskQueueHandle) {
         synchronized(taskQueueMap) {
@@ -645,7 +640,7 @@ private long nextId;
      * This method is invoked by <code>Component.setApplicationInstance()</code>
      * 
      * @param component the component to register
-     * @see Component#register(ApplicationInstance)
+     * @see Component#register(ApplicationInstance, Window)
      */
     void registerComponent(Component component) {
         if (component == this)
@@ -674,7 +669,7 @@ private long nextId;
      * </p>
      * 
      * @param component the component to unregister
-     * @see Component#register(ApplicationInstance)
+     * @see Component#register(ApplicationInstance, Window)
      */
     void unregisterComponent(Component component) {
     	if (componentsToRemove == null) {
@@ -817,13 +812,13 @@ private long nextId;
     }
     
     /**
-     * If this feature is set to true, then the new secondary window renders 
-     * the menubar.<br/>
-     * Mozilla and Firefox users can force new windows to always render the 
+     * <p>If this feature is set to true, then the new secondary window renders 
+     * the menubar.</p>
+     * <p>Mozilla and Firefox users can force new windows to always render the 
      * menubar by setting dom.disable_window_open_feature.menubar to true in 
-     * about:config or in their user.js file. <br/>
-     * Supported in: Internet Explorer 5+, Netscape 6.x, Netscape 7.x, 
-     * Mozilla 1.x, Firefox 1.x 
+     * about:config or in their user.js file. </p>
+     * <p>Supported in: Internet Explorer 5+, Netscape 6.x, Netscape 7.x, 
+     * Mozilla 1.x, Firefox 1.x</p> 
      * 
      * @return true if the feature is set, otherwise false
      */
@@ -832,17 +827,17 @@ private long nextId;
     }
 
     /**
-     * If this feature is set to true, then the new secondary window renders 
+     * <p>If this feature is set to true, then the new secondary window renders 
      * the Navigation Toolbar (Back, Forward, Reload, Stop buttons). 
      * In addition to the Navigation Toolbar, Mozilla-based browsers will 
      * render the Tab Bar if it is visible, present in the parent window. 
      * (If this feature is set to no all toolbars in the window will be 
-     * invisible, for example extension toolbars).<br/>
-     * Mozilla and Firefox users can force new windows to always render the 
+     * invisible, for example extension toolbars).</p>
+     * <p>Mozilla and Firefox users can force new windows to always render the 
      * Navigation Toolbar by setting dom.disable_window_open_feature.toolbar 
-     * to true in about:config or in their user.js file.<br/>
-     * Supported in: Internet Explorer 5+, Netscape 6.x, Netscape 7.x, 
-     * Mozilla 1.x, Firefox 1.x 
+     * to true in about:config or in their user.js file.</p>
+     * <p>Supported in: Internet Explorer 5+, Netscape 6.x, Netscape 7.x, 
+     * Mozilla 1.x, Firefox 1.x</p> 
      * 
      * @return true if the feature is set, otherwise false
      */
@@ -851,18 +846,18 @@ private long nextId;
     }
 
     /**
-     * If this feature is set to true, then the new secondary window renders the 
+     * <p>If this feature is set to true, then the new secondary window renders the 
      * Personal Toolbar in Netscape 6.x, Netscape 7.x and Mozilla browser. 
      * It renders the Bookmarks Toolbar in Firefox 1.x and, in MSIE 5+, it 
      * renders the Links bar. In addition to the Personal Toolbar, Mozilla 
      * browser will render the Site Navigation Bar if such toolbar is visible, 
-     * present in the parent window.<br/>
-     * Mozilla and Firefox users can force new windows to always render the 
+     * present in the parent window.</p>
+     * <p>Mozilla and Firefox users can force new windows to always render the 
      * Personal Toolbar/Bookmarks toolbar by setting 
      * dom.disable_window_open_feature.directories to true in about:config or 
-     * in their user.js file.<br/>
-     * Supported in: Internet Explorer 5+, Netscape 6.x, Netscape 7.x, 
-     * Mozilla 1.x, Firefox 1.x 
+     * in their user.js file.</p>
+     * <p>Supported in: Internet Explorer 5+, Netscape 6.x, Netscape 7.x, 
+     * Mozilla 1.x, Firefox 1.x</p> 
      * 
      * @return true if the feature is set, otherwise false
      */
@@ -871,14 +866,14 @@ private long nextId;
     }
 
     /**
-     * If this feature is set to true, then the new secondary window has a 
+     * <p>If this feature is set to true, then the new secondary window has a 
      * status bar. Users can force the rendering of status bar in all 
      * Mozilla-based browsers, in MSIE 6 SP2 (Note on status bar in XP SP2) 
      * and in Opera 6+. The default preference setting in recent Mozilla-based 
      * browser releases and in Firefox 1.0 is to force the presence of the 
-     * status bar.<br/>
-     * Supported in: Internet Explorer 5+, Netscape 6.x, Netscape 7.x, 
-     * Mozilla 1.x, Firefox 1.x
+     * status bar.</p>
+     * <p>Supported in: Internet Explorer 5+, Netscape 6.x, Netscape 7.x, 
+     * Mozilla 1.x, Firefox 1.x</p>
      * 
      * @return true if the feature is set, otherwise false
      */
@@ -887,17 +882,17 @@ private long nextId;
     }
 
     /**
-     * If this feature is set to yes, then the new secondary window renders 
+     * <p>If this feature is set to yes, then the new secondary window renders 
      * the Location bar in Mozilla-based browsers. MSIE 5+ and Opera 7.x 
-     * renders the Address Bar. <br/>
-     * Mozilla and Firefox users can force new windows to always render the 
+     * renders the Address Bar. </p>
+     * <p>Mozilla and Firefox users can force new windows to always render the 
      * location bar by setting dom.disable_window_open_feature.location to 
-     * true in about:config or in their user.js file. <br/>
+     * true in about:config or in their user.js file. </p>
      * 
-     * Firefox 3 note: <br/>
-     * In Firefox 3, dom.disable_window_open_feature.location now defaults to 
+     * <p>Firefox 3 note: </p>
+     * <p>In Firefox 3, dom.disable_window_open_feature.location now defaults to 
      * true, forcing the presence of the Location Bar much like in IE7. 
-     * See bug mozilla 337344 for more information.
+     * See bug mozilla 337344 for more information.</p>
      * 
      * @return true if the feature is set, otherwise false
      */

@@ -14,7 +14,7 @@ import javax.servlet.http.HttpSessionEvent;
 import nextapp.echo.webcontainer.service.StringVersionService;
 
 /**
- * Container / manager of all <code>UserInstance<code> objects in the servlet session.
+ * Container / manager of all <code>UserInstance</code> objects in the servlet session.
  */
 public class UserInstanceContainer 
 implements HttpSessionActivationListener, HttpSessionBindingListener, Serializable {

@@ -62,7 +62,6 @@ public class ComponentIntrospector extends ObjectIntrospector {
      * Creates a new <code>ComponentIntrospector</code> for the specified
      * type.
      * 
-     * @param typeName the component type name
      */
     protected ComponentIntrospector(Class type, ClassLoader classLoader) {
         super(type);

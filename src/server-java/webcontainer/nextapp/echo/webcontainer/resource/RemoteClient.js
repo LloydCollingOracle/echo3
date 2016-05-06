@@ -354,7 +354,7 @@ Echo.RemoteClient = Core.extend(Echo.Client, {
 	        	this._showNextNetworkOutageMsg = false;
 	        	var confirmPollOutage = confirm(networkOutageMsg);
 	        	// reset the _showNextNetworkOutageMsg flag once user clicks OK on the alert box
-	        	if (confirmPollOutage == true) {
+	        	if (confirmPollOutage === true) {
 	        		this._showNextNetworkOutageMsg = true;
 	        	} else {
 	        		this.fail(detail);
@@ -399,7 +399,7 @@ Echo.RemoteClient = Core.extend(Echo.Client, {
 	        	var confirmSyncOutage = confirm(networkOutageMsg);
 	        	// reset the _showNextNetworkOutageMsg flag once user clicks OK on the alert box
 	        	// and sync the last client message again
-	        	if (confirmSyncOutage == true) {
+	        	if (confirmSyncOutage === true) {
 	        		this._showNextNetworkOutageMsg = true;
 	        		this._clientMessage = this._lastClientMessage;
 	        		Core.Web.Scheduler.run(Core.method(this, this.sync));
@@ -665,7 +665,7 @@ Echo.RemoteClient = Core.extend(Echo.Client, {
 
         // if this is the first message, remove the loading div once the server message
         // has been processed
-        if (initMessage == true) {
+        if (initMessage === true) {
             serverMessage.addCompletionListener(this._removeLoadingScreen);
         }
         

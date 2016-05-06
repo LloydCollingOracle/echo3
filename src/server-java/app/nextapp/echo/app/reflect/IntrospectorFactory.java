@@ -49,10 +49,9 @@ public class IntrospectorFactory {
      * Creates a <b>new</b> <code>ObjectIntrospector</code> for a specific type
      * and <code>ClassLoader</code>.
      * 
-     * @param typeName the type name
+     * @param type the type to inspect
      * @param classLoader the <code>ClassLoader</code>
      * @return the <code>ObjectIntrospector</code>
-     * @throws ClassNotFoundException if the type does not exist for the specified <code>ClassLoader</code>
      */
     private static ObjectIntrospector createIntrospector(Class type, ClassLoader classLoader) {
         if (IntrospectionUtil.isSuperType(type, Component.class)) {
@@ -96,11 +95,10 @@ public class IntrospectorFactory {
      * Retrieves or creates an <code>ObjectIntrospector</code> instance for a specific type
      * from a specific <code>ClassLoader</code>
      * 
-     * @param typeName the type to introspect
+     * @param type the type to introspect
      * @param classLoader the <code>ClassLoader</code>
      * @return an <code>ObjectIntrospector</code> for the appropriate type 
      *         (a <code>ComponentIntrospector</code> in the event the type is an <code>Component</code>)
-     * @throws ClassNotFoundException if the type is not provided by the <code>ClassLoader</code>
      */
     public static ObjectIntrospector get(Class type, ClassLoader classLoader) {
         // Find or Create Object Introspector Store based on ClassLoader Cache.

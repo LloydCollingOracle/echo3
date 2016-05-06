@@ -119,7 +119,6 @@ implements Serializable {
      * <strong>Warning:</strong> the <code>init()</code> method must be 
      * invoked before the <code>ServerUpdateManager</code> is used.
      * 
-     * @param applicationInstance the relevant <code>ApplicationInstance</code>
      * @see #init(nextapp.echo.app.update.ClientUpdateManager)
      */
     public ServerUpdateManager() {
