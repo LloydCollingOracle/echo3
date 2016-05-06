@@ -62,17 +62,59 @@ public class XmlRequestParser {
     }
     
     /**
-     * Trims an XML <code>InputStream</code> to work around the issue 
+     * Trims an XML String to work around the issue 
      * of the XML parser crashing on trailing whitespace.   This issue is present 
      * with requests from Konqueror/KHTML browsers. 
      * 
-     * @param in the <code>InputStream</code>
-     * @param characterEncoding the character encoding of the stream 
+     * @param in the String to clean
+     * @param characterEncoding the character encoding of returned stream
      * @return a cleaned version of the stream, as a 
      *         <code>ByteArrayInputStream</code>.
      */
-    private static InputStream cleanXmlInputStream(InputStream in, String characterEncoding) 
+    private static InputStream cleanXmlInputStream(String in, String characterEncoding) 
     throws IOException{
+    	byte[] out = in.trim().getBytes(characterEncoding);
+    	        
+    	return new ByteArrayInputStream(out);
+    }
+        
+    /**
+     * Removes invalid characters that are not convertible to xml
+     * @param in the String to convert
+     * @param characterEncoding the character encoding of the String 
+     * @return a cleaned version of the stream, as a 
+     *         <code>ByteArrayInputStream</code>.
+     * @throws IOException
+     */
+    private static InputStream 
+            removeInvalidCharacters(String in, String characterEncoding) 
+            throws IOException{
+        
+        StringBuffer out = new StringBuffer(); // Used to hold the output.
+        char current; // Used to reference the current character.
+
+        for (int i = 0; i < in.length(); i++) {
+            current = in.charAt(i);
+            if ((current == 0x9) ||
+                (current == 0xA) ||
+                (current == 0xD) ||
+                ((current >= 0x20) && (current <= 0xD7FF)) ||
+                ((current >= 0xE000) && (current <= 0xFFFD)))
+                out.append(current);
+        }
+        
+        return new ByteArrayInputStream(out.toString().getBytes(characterEncoding));
+    }
+        
+    /**
+     * Converts the {@link InputStream} into a String
+     * @param in InputString to convert
+     * @param characterEncoding encoding to convert String with
+     * @return a String converted from the InputString argument
+     * @throws IOException
+     */
+    private static String inputStreamToString(InputStream in, String characterEncoding) 
+            throws IOException {
         ByteArrayOutputStream byteOut = new ByteArrayOutputStream();
         
         byte[] buffer = new byte[4096];
@@ -92,9 +134,7 @@ public class XmlRequestParser {
         in.close();
         
         byte[] data = byteOut.toByteArray();
-        data = new String(data, characterEncoding).trim().getBytes(characterEncoding);
-        
-        return new ByteArrayInputStream(data);
+        return new String(data, characterEncoding);
     }
     
     /**
@@ -107,16 +147,18 @@ public class XmlRequestParser {
      * @throws IOException if the input is invalid
      */
     public static Document parse(HttpServletRequest request, String characterEncoding) 
-    throws IOException {
-        InputStream in = null;
+            throws IOException {
+        
+        InputStream in = request.getInputStream();
+        String inStr = inputStreamToString(in, characterEncoding);
+        in = removeInvalidCharacters(inStr, characterEncoding);
+        
         try {
             String userAgent = request.getHeader("user-agent");
             if (userAgent != null && userAgent.indexOf("onqueror") != -1) {
                 // Invoke XML 'cleaner', but only for  user agents that contain the string "onqueror",
                 // such as Konqueror, for example.
-                in = cleanXmlInputStream(request.getInputStream(), characterEncoding);
-            } else {
-                in = request.getInputStream();
+                in = cleanXmlInputStream(inStr, characterEncoding);
             }
             return DomUtil.getDocumentBuilder().parse(in);
         } catch (final SAXException ex) {
