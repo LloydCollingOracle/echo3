@@ -490,7 +490,7 @@ public abstract class WebContainerServlet extends HttpServlet {
      * @param ex The exception triggering this error handleing.
      * @throws IOException May be thrown on issues writing to the HTTP response.
      */
-    private void processError(Connection conn, HttpServletRequest request, HttpServletResponse response, Exception ex) 
+    protected void processError(Connection conn, HttpServletRequest request, HttpServletResponse response, Exception ex) 
             throws IOException {
         if (conn != null) {
             try {
