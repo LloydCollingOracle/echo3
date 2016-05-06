@@ -106,7 +106,7 @@ import nextapp.echo.app.event.EventListenerList;
  * <code>getEventListenerList()</code>.
  */
 public abstract class Component 
-implements RenderIdSupport, Serializable {
+implements RenderIdSupport, Serializable, LabelProvider {
     
     /** Serial Version UID. */
     private static final long serialVersionUID = 20070101L;
@@ -239,6 +239,11 @@ implements RenderIdSupport, Serializable {
      * This identifier is not related in any way to <code>renderId</code>. 
      */
     private String id;
+    
+    /**
+     * The peer component that is used as a label for this component
+     */
+    private Component label;
     
     /** 
      * The layout direction of the component.
@@ -731,6 +736,13 @@ implements RenderIdSupport, Serializable {
     public final Object getIndex(String propertyName, int propertyIndex) {
         return localStyle.getIndex(propertyName, propertyIndex);
     } 
+    
+    /**
+     * Retrieves the peer component that acts as a label for this component
+     */
+    public Component getLabel() {
+        return this.label;
+    }
     
     /**
      * Returns the <code>LayoutData</code> object used to describe how this
@@ -1519,6 +1531,13 @@ implements RenderIdSupport, Serializable {
     public void setIndex(String propertyName, int propertyIndex, Object newValue) {
         localStyle.setIndex(propertyName, propertyIndex, newValue);
         firePropertyChange(propertyName, null, null);
+    }
+    
+    /**
+     * Applies a Label to this component
+     */
+    public void setLabel(Component c) {
+        this.label = c;
     }
     
     /**
