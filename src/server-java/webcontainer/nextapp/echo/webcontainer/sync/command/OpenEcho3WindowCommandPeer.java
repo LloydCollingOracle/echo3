@@ -75,6 +75,38 @@ extends AbstractCommandSynchronizePeer {
                 return ((OpenEcho3WindowCommand) command).getWindow().getId();
             }
         });
+        addProperty("features", new AbstractCommandSynchronizePeer.PropertyPeer() {
+            public Object getProperty(Context context, Command command) {
+            
+                Window w = ((OpenEcho3WindowCommand) command).getWindow();
+                
+                JsFeatureBuilder builder = new JsFeatureBuilder();
+                builder
+                    .createFeature("directories", w.isDirectories())
+                    .createFeature("toolbar", w.isToolbar())
+                    .createFeature("status", w.isStatus())
+                    .createFeature("address", w.isLocation())
+                    .createFeature("menubar", w.isMenubar());
+                
+                return builder.toString();
+            }
+        });
+    }
+    
+    private static class JsFeatureBuilder {
+        
+        private StringBuilder builder = new StringBuilder();
+        
+        private JsFeatureBuilder createFeature(String feature, boolean isOn) {
+            if (builder.length() > 0) builder.append(',');
+            builder.append(feature);
+            builder.append('=');
+            builder.append(isOn ? "yes" : "no");
+            return this;
+        }
+        public String toString() {
+            return builder.toString();
+        }
     }
     
     /**

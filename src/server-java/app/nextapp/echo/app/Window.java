@@ -34,7 +34,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -146,6 +145,16 @@ public class Window extends Component {
    * The <code>UpdateManager</code> handling updates to/from this window.
    */
   private UpdateManager updateManager;
+
+private boolean location;
+
+private boolean menubar;
+
+private boolean toolbar;
+
+private boolean directories;
+
+private boolean status;
     
     /**
      * Creates a new window.
@@ -797,5 +806,134 @@ public class Window extends Component {
     
     public void updateLastUpdateTime() {
         lastUpdateTime = System.currentTimeMillis();
+    }
+    
+    /**
+     * If this feature is set to true, then the new secondary window renders 
+     * the menubar.<br/>
+     * Mozilla and Firefox users can force new windows to always render the 
+     * menubar by setting dom.disable_window_open_feature.menubar to true in 
+     * about:config or in their user.js file. <br/>
+     * Supported in: Internet Explorer 5+, Netscape 6.x, Netscape 7.x, 
+     * Mozilla 1.x, Firefox 1.x 
+     * 
+     * @return true if the feature is set, otherwise false
+     */
+    public boolean isMenubar() {
+        return menubar;
+    }
+
+    /**
+     * If this feature is set to true, then the new secondary window renders 
+     * the Navigation Toolbar (Back, Forward, Reload, Stop buttons). 
+     * In addition to the Navigation Toolbar, Mozilla-based browsers will 
+     * render the Tab Bar if it is visible, present in the parent window. 
+     * (If this feature is set to no all toolbars in the window will be 
+     * invisible, for example extension toolbars).<br/>
+     * Mozilla and Firefox users can force new windows to always render the 
+     * Navigation Toolbar by setting dom.disable_window_open_feature.toolbar 
+     * to true in about:config or in their user.js file.<br/>
+     * Supported in: Internet Explorer 5+, Netscape 6.x, Netscape 7.x, 
+     * Mozilla 1.x, Firefox 1.x 
+     * 
+     * @return true if the feature is set, otherwise false
+     */
+    public boolean isToolbar() {
+        return toolbar;
+    }
+
+    /**
+     * If this feature is set to true, then the new secondary window renders the 
+     * Personal Toolbar in Netscape 6.x, Netscape 7.x and Mozilla browser. 
+     * It renders the Bookmarks Toolbar in Firefox 1.x and, in MSIE 5+, it 
+     * renders the Links bar. In addition to the Personal Toolbar, Mozilla 
+     * browser will render the Site Navigation Bar if such toolbar is visible, 
+     * present in the parent window.<br/>
+     * Mozilla and Firefox users can force new windows to always render the 
+     * Personal Toolbar/Bookmarks toolbar by setting 
+     * dom.disable_window_open_feature.directories to true in about:config or 
+     * in their user.js file.<br/>
+     * Supported in: Internet Explorer 5+, Netscape 6.x, Netscape 7.x, 
+     * Mozilla 1.x, Firefox 1.x 
+     * 
+     * @return true if the feature is set, otherwise false
+     */
+    public boolean isDirectories() {
+        return directories;
+    }
+
+    /**
+     * If this feature is set to true, then the new secondary window has a 
+     * status bar. Users can force the rendering of status bar in all 
+     * Mozilla-based browsers, in MSIE 6 SP2 (Note on status bar in XP SP2) 
+     * and in Opera 6+. The default preference setting in recent Mozilla-based 
+     * browser releases and in Firefox 1.0 is to force the presence of the 
+     * status bar.<br/>
+     * Supported in: Internet Explorer 5+, Netscape 6.x, Netscape 7.x, 
+     * Mozilla 1.x, Firefox 1.x
+     * 
+     * @return true if the feature is set, otherwise false
+     */
+    public boolean isStatus() {
+        return status;
+    }
+
+    /**
+     * If this feature is set to yes, then the new secondary window renders 
+     * the Location bar in Mozilla-based browsers. MSIE 5+ and Opera 7.x 
+     * renders the Address Bar. <br/>
+     * Mozilla and Firefox users can force new windows to always render the 
+     * location bar by setting dom.disable_window_open_feature.location to 
+     * true in about:config or in their user.js file. <br/>
+     * 
+     * Firefox 3 note: <br/>
+     * In Firefox 3, dom.disable_window_open_feature.location now defaults to 
+     * true, forcing the presence of the Location Bar much like in IE7. 
+     * See bug mozilla 337344 for more information.
+     * 
+     * @return true if the feature is set, otherwise false
+     */
+    public boolean isLocation() {
+        return location;
+    }
+    
+    /**
+     * @see #isMenubar()
+     * @param menubar
+     */
+    public void setMenubar(boolean menubar) {
+        this.menubar = menubar;
+    }
+
+    /**
+     * @see #isToolbar()
+     * @param toolbar
+     */
+    public void setToolbar(boolean toolbar) {
+        this.toolbar = toolbar;
+    }
+
+    /**
+     * @see #isDirectories()
+     * @param directories
+     */
+    public void setDirectories(boolean directories) {
+        this.directories = directories;
+    }
+
+    /**
+     * @see #isStatus()
+     * @param status
+     */
+    public void setStatus(boolean status) {
+        this.status = status;
+    }
+
+    /**
+     * @see #isLocation()
+     * @param location
+     */
+    public void setLocation(boolean location) {
+        this.location = location;
     }
 }

@@ -20,7 +20,7 @@ Echo.RemoteClient.CommandExec.OpenEcho3Window = Core.extend(Echo.RemoteClient.Co
                 },
 
                 run: function() {
-                    window.open(this._message, "_blank");
+                    window.open(this._message, "_blank", commandData.features);
                 }
             });
             Core.Web.Scheduler.add(new DelayedMessageRunnable(commandData.uri));
