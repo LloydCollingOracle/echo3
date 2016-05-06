@@ -306,6 +306,8 @@ public abstract class ApplicationInstance implements Serializable {
      * @return the <code>Window</code>
      */
     public Window getWindow(int index) {
+    	if (activeWindows == null)
+    		return null;
         return activeWindows[index];
     }
     
