@@ -401,7 +401,7 @@ public abstract class ApplicationInstance implements Serializable {
         }
     }
     
-    private void removeWindow(Window window) {
+    protected void removeWindow(Window window) {
         // remove the window from the list of windows
         Window[] old = activeWindows;
         activeWindows = new Window[old.length - 1];
@@ -421,7 +421,6 @@ public abstract class ApplicationInstance implements Serializable {
             }
             closingWindows[old.length] = window;
         }
-        window.enqueueCommand(new BrowserCloseWindowCommand());
     }
     
     /**
@@ -429,7 +428,7 @@ public abstract class ApplicationInstance implements Serializable {
      * 
      * @param window the top-level window
      */
-    private void addWindow(Window window) {
+    protected void addWindow(Window window) {
         if (activeWindows == null) {
             activeWindows = new Window[] {window};
             window.register(this, window);
@@ -587,6 +586,7 @@ public abstract class ApplicationInstance implements Serializable {
      */
     public void closeWindow(Window w) {
         removeWindow(w);
+        w.enqueueCommand(new BrowserCloseWindowCommand());
         doValidation();
     }
 
