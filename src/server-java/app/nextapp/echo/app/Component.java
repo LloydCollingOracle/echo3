@@ -1688,17 +1688,84 @@ implements RenderIdSupport, Serializable {
         }
         return -1;
     }
-    
+
     public Window getContainingWindow() {
         return window;
     }
-    
+
     public void setContainingWindow(Window w) {
         this.window = w;
         if (this.children != null) {
             for (int i = 0; i < children.size(); i++) {
-                ((Component)children.get(i)).setContainingWindow(w);
+                ((Component) children.get(i)).setContainingWindow(w);
             }
         }
+    }
+
+    /**
+     * Add a component, just don't let echo3 know about it
+     */
+    public void stealthAdd(Component c) {
+        stealthAdd(c, -1);
+    }
+
+    /**
+     * Add a component, just don't let echo3 know about it. DO NO USE (unless
+     * you want to update the in memory representation without updating the
+     * client side).
+     * 
+     * Will stealthRemove from the previous parent if the parent variable is set 
+     */
+    public void stealthAdd(Component c, int index) throws IllegalChildException {
+
+        // Ensure child is acceptable to this component.
+        if (!isValidChild(c)) {
+            throw new IllegalChildException(this, c);
+        }
+
+        // Ensure child component finds this component acceptable as a parent.
+        if (!c.isValidParent(this)) {
+            throw new IllegalChildException(this, c);
+        }
+
+        // Remove child from it's current parent if required.
+        if (c.parent != null) {
+            c.parent.stealthRemove(c);
+        }
+
+        // Lazy-create child collection if necessary.
+        if (children == null) {
+            children = new ArrayList(CHILD_LIST_CAPACITY);
+        }
+
+        // Connect child to parent
+        c.parent = this;
+
+        // add to end of children list or to specific position 
+        if ((index == -1) || (index >= children.size())) {
+            children.add(c);
+        }
+        else {
+            children.add(index, c);
+        }
+    }
+
+    /**
+     * Remove the component, just don't let echo3 know about it. DO NOT USE
+     * (unless you want to update the in-memory representation without updating
+     * the client side).
+     * 
+     * @param c
+     */
+    public void stealthRemove(Component c) {
+
+        if (children == null || !children.contains(c)) {
+            // Do-nothing if component is not a child.
+            return;
+        }
+
+        // Dissolve references between parent and child.
+        children.remove(c);
+        c.parent = null;
     }
 }
