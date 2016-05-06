@@ -510,7 +510,12 @@ Echo.Client = Core.extend({
             this.dispose();
         } finally {
             if (this.configuration["StopError.URI"]) {
-                var eid = detail.substring(detail.indexOf("ID: ") + 4);
+                var eid = '';
+                if (detail != null && detail.indexOf("Server Exception. ID: ") > -1) {
+                    eid = detail.substring(detail.indexOf("ID: ") + 4);
+                } else if (detail != null) {
+                    eid = detail;
+                }
                 var url = this.configuration["StopError.URI"];
                 if (url.indexOf('?') > -1) {
                     url = url + "&eid=" + eid;
