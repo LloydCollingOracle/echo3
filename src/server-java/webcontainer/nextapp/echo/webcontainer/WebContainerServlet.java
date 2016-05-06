@@ -464,9 +464,7 @@ public abstract class WebContainerServlet extends HttpServlet {
                 response.setHeader("Cache-Control", "max-age=3600, public");
                 response.setDateHeader("Expires", System.currentTimeMillis() + (3600 * 1000));
                 response.setDateHeader("Last-Modified", startupTime);
-            } 
-            
-            if (version == Service.IE_HTTPS_CACHE_ONLY) {
+            } else if (version == Service.IE_HTTPS_CACHE_ONLY) {
                 response.reset();
                 response.setHeader("Pragma","cache");
             } else {
