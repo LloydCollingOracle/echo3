@@ -95,8 +95,11 @@ implements Service {
         String windowId = conn.getRequest().getParameter(WebContainerServlet.APPLICATION_WINDOW_ID_PARAMETER);
         String uiid = conn.getRequest().getParameter(WebContainerServlet.USER_INSTANCE_ID_PARAMETER);
         UserInstanceContainer uic = conn.getUserInstanceContainer();
+        errorIfNull(uic);
         UserInstance instance = uic.loadUserInstance(uiid, null);
+        errorIfNull(instance);
         ApplicationInstance app = instance.getApplicationInstance();
+        errorIfNull(app);
         Window w = app.getWindow(windowId);
         if (w != null) {
             w.updateLastUpdateTime();
@@ -107,5 +110,11 @@ implements Service {
         		"=\"" + 
         		Boolean.toString(hasQueuedTasks) + 
         		"\"/>");
+    }
+    
+    private void errorIfNull(Object o) {
+       if (o == null) {
+           throw new IllegalStateException("The application session has been closed due to an error in another window. If reporting the error, please include the error from the other window.");
+       }
     }
 }
