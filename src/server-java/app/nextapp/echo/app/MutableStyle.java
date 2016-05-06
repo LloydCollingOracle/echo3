@@ -159,7 +159,6 @@ implements Style {
     
     private Object[] data = EMPTY;
     int length = 0; // Number of items * 2;
-    HashSet complexProperties = new HashSet();
 
     /**
      * Default constructor.
@@ -434,16 +433,5 @@ implements Style {
         }
         out.append("}");
         return out.toString();
-    }
-
-    public boolean isComplexProperty(String propertyName) {
-        return complexProperties.contains(propertyName);
-    }
-
-    public void setComplexProperty(String propertyName, boolean isComplex) {
-        if (!isComplex)
-            complexProperties.remove(propertyName);
-        if (isComplex)
-            complexProperties.add(propertyName);
     }
 }
