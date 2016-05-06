@@ -1417,6 +1417,11 @@ implements RenderIdSupport, Serializable, LabelProvider {
      * @see #get(java.lang.String)
      */
     public void set(String propertyName, Object newValue) {
+        if (newValue != null && !(newValue instanceof Serializable)) {
+            throw new IllegalArgumentException(
+                    "Arguments to Component.set must be Serializable, call was: ["
+                            + propertyName + "], [" + newValue + "]");
+        }
         Object oldValue = localStyle.get(propertyName);
         localStyle.set(propertyName, newValue);
         firePropertyChange(propertyName, oldValue, newValue);
