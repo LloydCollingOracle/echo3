@@ -146,6 +146,11 @@ public abstract class ApplicationInstance implements Serializable {
      * The system-generated id of the default window
      */
     private String defaultWindowId = null;
+        
+    /**
+     * Whether the default window id has been assigned yet
+     */
+    private boolean defaultWindowIdUsed = false;
             
     /**
      * Flag indicating whether the application has been disposed, i.e., whether <code>ApplicationInstance.dispose()</code>
@@ -223,7 +228,7 @@ public abstract class ApplicationInstance implements Serializable {
         this.allowAsyncWindowUpdates = allowAsyncWindowUpdates;
         this.defaultWindowId = defaultWindowId;
         Window window = init();
-        addWindow(window);
+        addMainWindow(window);
         doValidation();
         return window;
     }
@@ -445,6 +450,41 @@ public abstract class ApplicationInstance implements Serializable {
     }
     
     /**
+     * Adds the application window.
+     * 
+     * @param window the top-level window
+     */
+    protected void addMainWindow(Window window) {
+        if (activeWindows == null) {
+            activeWindows = new Window[] {window};
+            window.register(this, window);
+        } else {
+            // add the window as the first window to the list of windows
+            Window[] old = activeWindows;
+            activeWindows = new Window[old.length + 1];
+            for (int i  = 0; i <old.length; i++) {
+                activeWindows[i+1] = old[i];
+                // enqueue a command in the main window to open the new window
+                window.enqueueCommand(
+                        activeWindows[i+1].getOpenWindowCommand()
+                );
+            }
+            activeWindows[0] = window;
+            
+            // if we're doing async updates, create update task queues if needed
+            if (allowAsyncWindowUpdates) {
+                if (old.length == 1) {
+                    activeWindows[0].getUpdateManager().createAsyncUpdateQueue();
+                }
+                window.getUpdateManager().createAsyncUpdateQueue();
+            }
+            window.register(this, window);
+        }
+        firePropertyChange(WINDOWS_CHANGED_PROPERTY, null, window);
+        window.doInit();
+    }
+    
+    /**
      * Whether the specified window has been added to this ApplicationInstance
      * @param w The window to determine if it's been added
      * @return True if the given window has been added to the application, false otherwise
@@ -610,7 +650,8 @@ public abstract class ApplicationInstance implements Serializable {
     }
 
     public String generateWindowId() {
-        if (activeWindows == null || activeWindows.length == 0) {
+        if (defaultWindowIdUsed == false && (activeWindows == null || activeWindows.length == 0)) {
+            defaultWindowIdUsed = true;
             return getDefaultWindowId();
         }
         return generateSystemId();
