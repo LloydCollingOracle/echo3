@@ -205,12 +205,14 @@ public class UserInstance implements Serializable {
         if (taskQueueToCallbackIntervalMap == null || taskQueueToCallbackIntervalMap.size() == 0) {
             return DEFAULT_CALLBACK_INTERVAL;
         }
-        Iterator it = taskQueueToCallbackIntervalMap.values().iterator();
         int returnInterval = Integer.MAX_VALUE;
-        while (it.hasNext()) {
-            int interval = ((Integer) it.next()).intValue();
-            if (interval < returnInterval) {
-                returnInterval = interval;
+        synchronized (taskQueueToCallbackIntervalMap) {
+            Iterator it = taskQueueToCallbackIntervalMap.values().iterator();
+            while (it.hasNext()) {
+                int interval = ((Integer) it.next()).intValue();
+                if (interval < returnInterval) {
+                    returnInterval = interval;
+                }
             }
         }
         return returnInterval;
