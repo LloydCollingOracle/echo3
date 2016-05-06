@@ -39,6 +39,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.Stack;
 
+import nextapp.echo.app.command.OpenEcho3WindowCommand;
 import nextapp.echo.app.update.ServerComponentUpdate;
 import nextapp.echo.app.update.ServerUpdateManager;
 import nextapp.echo.app.update.UpdateManager;
@@ -935,5 +936,9 @@ private boolean status;
      */
     public void setLocation(boolean location) {
         this.location = location;
+    }
+    
+    public Command getOpenWindowCommand() {
+        return new OpenEcho3WindowCommand(this);
     }
 }

@@ -442,9 +442,7 @@ public abstract class ApplicationInstance implements Serializable {
             activeWindows[old.length] = window;
             // enqueue a command in the current window to open the new window
             Window.getActive().enqueueCommand(
-                    new OpenEcho3WindowCommand(
-                            window
-                    )
+                    window.getOpenWindowCommand()
             );
             
             // if we're doing async updates, create update task queues if needed
