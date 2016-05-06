@@ -146,13 +146,6 @@ public abstract class ApplicationInstance implements Serializable {
      * The system-generated id of the default window
      */
     private String defaultWindowId = null;
-        
-    /**
-     * The next available sequentially generated 
-     * <code>Window</code>-unique identifier value.
-     * @see #generateId()
-     */
-    private long nextId;
             
     /**
      * Flag indicating whether the application has been disposed, i.e., whether <code>ApplicationInstance.dispose()</code>
@@ -269,20 +262,6 @@ public abstract class ApplicationInstance implements Serializable {
      */
     protected void firePropertyChange(String propertyName, Object oldValue, Object newValue) {
         propertyChangeSupport.firePropertyChange(propertyName, oldValue, newValue);
-    }
-    
-
-    
-    /**
-     * Generates an identifier which is unique within this 
-     * <code>ApplicationInstance</code>.  This identifier should not be
-     * used outside of the context of this  <code>ApplicationInstance</code>.
-     * 
-     * @return the unique identifier
-     * @see #generateSystemId()
-     */
-    public String generateId() {
-        return Long.toString(nextId++);
     }
     
     /**
@@ -420,6 +399,10 @@ public abstract class ApplicationInstance implements Serializable {
                 closingWindows[i] = old[i];
             }
             closingWindows[old.length] = window;
+        }
+        
+        if (activeWindows.length == 1) {
+            activeWindows[0].getUpdateManager().destroyAsyncUpdateQueue();
         }
     }
     

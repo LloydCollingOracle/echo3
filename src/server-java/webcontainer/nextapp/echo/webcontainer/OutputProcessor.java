@@ -29,6 +29,8 @@
 
 package nextapp.echo.webcontainer;
 
+import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -191,6 +193,18 @@ class OutputProcessor {
                 System.err.println();
             } catch (SAXException ex) {
                 // Should not generally occur.
+                throw new SynchronizationException("Cannot render XML sync message to console.", ex);
+            }
+        }
+
+        if (ServerConfiguration.DEBUG_PRINT_MESSAGES_TO_DIRECTORY != null) {
+            try {
+                File f = new File(ServerConfiguration.DEBUG_PRINT_MESSAGES_TO_DIRECTORY, conn.getUserInstance().getClientWindowId() + ".log");
+                FileOutputStream out = new FileOutputStream(f, true);
+                out.write(("=Res:" + Window.getActive().getCurrentTransactionId() + ":" + Window.getActive().getId() + "\n").getBytes("UTF-8"));
+                DomUtil.save(document, out, DomUtil.OUTPUT_PROPERTIES_INDENT);
+                out.write('\n');
+            } catch (SAXException ex) {
                 throw new SynchronizationException("Cannot render XML sync message to console.", ex);
             }
         }

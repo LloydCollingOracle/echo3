@@ -156,6 +156,13 @@ private boolean toolbar;
 private boolean directories;
 
 private boolean status;
+
+/**
+ * The next available sequentially generated 
+ * <code>Window</code>-unique identifier value.
+ * @see #generateId()
+ */
+private long nextId;
     
     /**
      * Creates a new window.
@@ -199,7 +206,7 @@ private boolean status;
      * @see #generateSystemId()
      */
     public String generateId() {
-        return getApplicationInstance().generateId();
+        return Long.toString(nextId++);
     }
     
     /**

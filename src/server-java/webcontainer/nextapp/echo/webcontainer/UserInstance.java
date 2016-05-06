@@ -63,7 +63,7 @@ public class UserInstance implements Serializable {
     private static final long serialVersionUID = 20070101L;
 
     /** Default asynchronous monitor callback interval (in milliseconds). */
-    private static final int DEFAULT_CALLBACK_INTERVAL = 500;
+    private static final int DEFAULT_CALLBACK_INTERVAL = 2000;
     
     /** Client configuration data property name. */ 
     public static final String PROPERTY_CLIENT_CONFIGURATION = "clientConfiguration";

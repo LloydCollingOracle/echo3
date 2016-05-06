@@ -45,6 +45,11 @@ public class ServerConfiguration {
      * Flag indicating whether client/server messages should be dumped to console.
      */
     public static boolean DEBUG_PRINT_MESSAGES_TO_CONSOLE;
+    
+    /**
+     * Flag indicating whether client/server messages should be dumped to a directory.
+     */
+    public static String DEBUG_PRINT_MESSAGES_TO_DIRECTORY;
 
     /**
      * Toggle to enable GZIP compression for MS IE Browser via property 'echo.allowiecompression'
@@ -115,6 +120,7 @@ public class ServerConfiguration {
         JS_CACHE_SECONDS = getConfigValue("echo.js.cacheseconds", initParameters, -1L);
         CSS_CACHING_ENABLED = getConfigValue("echo.css.enablecaching", initParameters, false);
         CSS_CACHE_SECONDS = getConfigValue("echo.css.cacheseconds", initParameters, -1L);
+        DEBUG_PRINT_MESSAGES_TO_DIRECTORY = getConfigValue("echo.syncdumpdir", initParameters, null);
     }
 
     /**

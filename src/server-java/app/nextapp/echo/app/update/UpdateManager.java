@@ -30,6 +30,7 @@
 package nextapp.echo.app.update;
 
 import java.io.Serializable;
+import java.lang.reflect.InvocationTargetException;
 
 import nextapp.echo.app.TaskQueueHandle;
 import nextapp.echo.app.Window;
@@ -133,5 +134,11 @@ implements Serializable {
 
         public void run() {
         }
+    }
+
+
+    public void destroyAsyncUpdateQueue() {
+        window.removeTaskQueue(this.asyncUpdateQueue);
+        this.asyncUpdateQueue = null;
     }
 }
