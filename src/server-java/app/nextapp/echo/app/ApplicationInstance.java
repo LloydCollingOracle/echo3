@@ -440,8 +440,8 @@ public abstract class ApplicationInstance implements Serializable {
                 activeWindows[i] = old[i];
             }
             activeWindows[old.length] = window;
-            // enqueue a command in the current window to open the new window
-            Window.getActive().enqueueCommand(
+            // enqueue a command in the main window to open the new window
+            activeWindows[0].enqueueCommand(
                     window.getOpenWindowCommand()
             );
             
