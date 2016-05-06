@@ -510,8 +510,15 @@ Echo.Client = Core.extend({
             this.dispose();
         } finally {
             if (this.configuration["StopError.URI"]) {
+                var eid = detail.substring(detail.indexOf("ID: ") + 4);
+                var url = this.configuration["StopError.URI"];
+                if (url.indexOf('?') > -1) {
+                    url = url + "&eid=" + eid;
+                } else {
+                    url = url + "?eid=" + eid;
+                }
                 // Redirect.
-                window.location.href = this.configuration["StopError.URI"];
+                window.location.href = url;
             } else {
                 // Display error.
                 this.displayError(element, this.configuration["StopError.Message"], detail, this.configuration["Action.Restart"], 
