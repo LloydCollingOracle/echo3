@@ -1,8 +1,13 @@
 package nextapp.echo.webcontainer.service;
 
 import java.io.IOException;
+import java.math.BigInteger;
+import java.security.AccessControlException;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 
 import nextapp.echo.webcontainer.Connection;
+import nextapp.echo.webcontainer.ServerConfiguration;
 import nextapp.echo.webcontainer.Service;
 import nextapp.echo.webcontainer.util.Resource;
 
@@ -12,7 +17,7 @@ import nextapp.echo.webcontainer.util.Resource;
  * 
  * @author Lloyd Colling
  */
-public class CSSStyleSheetService implements Service {
+public class CSSStyleSheetService implements Service, StringVersionService {
 
     public static final int ALL = 1;
     public static final int BRAILLE = 2;
@@ -121,11 +126,24 @@ public class CSSStyleSheetService implements Service {
     private String content;
     private final String contentType = "text/css";
     private int media = ALL;
+    private String stringVersion;
 
     public CSSStyleSheetService(String id, String content) {
         super();
         this.id = id;
         this.content = content;
+        
+        if (ServerConfiguration.CSS_CACHING_ENABLED) {
+            try {
+                MessageDigest md5 = MessageDigest.getInstance("MD5");
+                md5.update(content.getBytes());
+                BigInteger hash = new BigInteger(1, md5.digest());
+                stringVersion = hash.toString(16);
+            } catch (NoSuchAlgorithmException nsae) {
+                System.err.println("Unable to generate MD5 hash for javascript contents - caching will not be enabled");
+            }
+        }
+
     }
 
     public CSSStyleSheetService(String id, String content, String relativePath) {
@@ -188,12 +206,37 @@ public class CSSStyleSheetService implements Service {
     public String getId() {
         return id;
     }
-
+    
     public int getVersion() {
-        return 0;
+        if (ServerConfiguration.CSS_CACHING_ENABLED) {
+            return 0;
+        }
+        else {
+            return DO_NOT_CACHE;
+        }
+    }
+    
+    /**
+     * @see StringVersionService#getVersionAsString()
+     */
+    public String getVersionAsString() {
+        if (ServerConfiguration.CSS_CACHING_ENABLED) {
+            return stringVersion;
+        }
+        else {
+            return null;
+        }
     }
 
     public void service(Connection conn) throws IOException {
+        /*
+         * Apply our specific cache seconds value if it has been specified
+         * using the system property.
+         */
+        if (ServerConfiguration.CSS_CACHING_ENABLED && ServerConfiguration.CSS_CACHE_SECONDS != -1l) {
+            conn.getResponse().setHeader("Cache-Control", "max-age=" + String.valueOf(ServerConfiguration.CSS_CACHE_SECONDS) + ", public");
+            conn.getResponse().setDateHeader("Expires", System.currentTimeMillis() + (ServerConfiguration.CSS_CACHE_SECONDS * 1000));
+        }
         conn.getResponse().setContentType(contentType);
         conn.getWriter().print(content);
     }

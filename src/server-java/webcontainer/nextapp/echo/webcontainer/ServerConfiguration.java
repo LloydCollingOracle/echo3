@@ -71,6 +71,26 @@ public class ServerConfiguration {
      * URL to display as link following the message when JavaScript is disabled.
      */
     public static String NOSCRIPT_URL;
+    
+    /**
+     * Toggle to enable JavaScript Caching
+     */
+    public static boolean JS_CACHING_ENABLED;
+    
+    /**
+     * Number of seconds for JavaScripts to be cached
+     */
+    public static long JS_CACHE_SECONDS;
+    
+    /**
+     * Toggle to enable CSS Caching
+     */
+    public static boolean CSS_CACHING_ENABLED;
+    
+    /**
+     * Number of seconds for CSS to be cached
+     */
+    public static long CSS_CACHE_SECONDS;
 
     static {
         // Initialize configuration with System properties, if available
@@ -91,6 +111,10 @@ public class ServerConfiguration {
         NOSCRIPT_MESSAGE = getConfigValue("echo.noscript.message", initParameters, "This site only works with JavaScript " +
                 "enabled. Please enable JavaScript and reload the page. Hints how to enable JavaScript can be found at: ");
         NOSCRIPT_URL = getConfigValue("echo.noscript.url", initParameters, "http://www.enable-javascript.com/");
+        JS_CACHING_ENABLED = getConfigValue("echo.js.enablecaching", initParameters, false);
+        JS_CACHE_SECONDS = getConfigValue("echo.js.cacheseconds", initParameters, -1L);
+        CSS_CACHING_ENABLED = getConfigValue("echo.css.enablecaching", initParameters, false);
+        CSS_CACHE_SECONDS = getConfigValue("echo.css.cacheseconds", initParameters, -1L);
     }
 
     /**
@@ -121,5 +145,9 @@ public class ServerConfiguration {
 
     private static boolean getConfigValue(String name, Map initParameters, boolean defaultValue) {
         return Boolean.valueOf(getConfigValue(name, initParameters, String.valueOf(defaultValue))).booleanValue();
+    }
+
+    private static long getConfigValue(String name, Map initParameters, long defaultValue) {
+        return Long.valueOf(getConfigValue(name, initParameters, String.valueOf(defaultValue))).longValue();
     }
 }

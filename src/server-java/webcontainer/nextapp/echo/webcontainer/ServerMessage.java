@@ -37,6 +37,7 @@ import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
 
 import nextapp.echo.app.util.DomUtil;
+import nextapp.echo.webcontainer.service.StringVersionService;
 
 /**
  * The outgoing XML message which synchronizes the state of the client to that
@@ -102,7 +103,16 @@ public class ServerMessage {
         }
         
         Element libraryElement = document.createElement("lib");
-        libraryElement.appendChild(document.createTextNode(serviceId));
+        StringBuffer nodeText = new StringBuffer(serviceId);
+        Service service = WebContainerServlet.getServiceRegistry().get(serviceId);
+        if (service instanceof StringVersionService) {
+            StringVersionService svs = (StringVersionService) service;
+            if (svs.getVersionAsString() != null) {
+                nodeText.append("&v=");
+                nodeText.append(((StringVersionService)service).getVersionAsString());
+            }
+        }
+        libraryElement.appendChild(document.createTextNode(nodeText.toString()));
         librariesElement.appendChild(libraryElement);
         addedLibraries.add(serviceId);
     }

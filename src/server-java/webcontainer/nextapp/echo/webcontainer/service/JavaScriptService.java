@@ -30,7 +30,9 @@
 package nextapp.echo.webcontainer.service;
 
 import java.io.IOException;
-import java.security.AccessControlException;
+import java.math.BigInteger;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 
 import nextapp.echo.webcontainer.Connection;
 import nextapp.echo.webcontainer.ServerConfiguration;
@@ -94,6 +96,9 @@ implements Service {
     /** The JavaScript content in GZip compressed form. */
     private byte[] gzipContent;
     
+    /** The MD5 hash in the case that caching is enabled */
+    private String stringVersion;
+    
     /**
      * Creates a new <code>JavaScriptService</code>.
      * 
@@ -126,6 +131,17 @@ implements Service {
 	            throw new RuntimeException("Exception compressing JavaScript source.", ex);
 	        }
         }
+        
+        if (ServerConfiguration.JS_CACHING_ENABLED) {
+        	try {
+                MessageDigest md5 = MessageDigest.getInstance("MD5");
+                md5.update(content.getBytes());
+                BigInteger hash = new BigInteger(1, md5.digest());
+                stringVersion = hash.toString(16);
+            } catch (NoSuchAlgorithmException nsae) {
+                System.err.println("Unable to generate MD5 hash for javascript contents - caching will not be enabled");
+            }
+        }
     }
     
     /**
@@ -140,6 +156,17 @@ implements Service {
         this.id = id;
         this.content = ServerConfiguration.JAVASCRIPT_COMPRESSION_ENABLED ? JavaScriptCompressor.compress(content) : content;
         gzipContent = gzippedContent;
+        
+        if (ServerConfiguration.JS_CACHING_ENABLED) {
+        	try {
+                MessageDigest md5 = MessageDigest.getInstance("MD5");
+                md5.update(content.getBytes());
+                BigInteger hash = new BigInteger(1, md5.digest());
+                stringVersion = hash.toString(16);
+            } catch (NoSuchAlgorithmException nsae) {
+                System.err.println("Unable to generate MD5 hash for javascript contents - caching will not be enabled");
+            }
+        }
     }
     
     /**
@@ -157,7 +184,24 @@ implements Service {
      * @see Service#getVersion()
      */
     public int getVersion() {
-        return DO_NOT_CACHE;
+        if (ServerConfiguration.JS_CACHING_ENABLED) {
+            return 0;
+        }
+        else {
+            return DO_NOT_CACHE;
+        }
+    }
+    
+    /**
+     * @see StringVersionService#getVersionAsString()
+     */
+    public String getVersionAsString() {
+        if (ServerConfiguration.JS_CACHING_ENABLED) {
+            return stringVersion;
+        }
+        else {
+            return null;
+        }
     }
     
     /**
@@ -165,6 +209,14 @@ implements Service {
      */
     public void service(Connection conn) 
     throws IOException {
+        /*
+         * Apply our specific cache seconds value if it has been specified
+         * using the system property.
+         */
+        if (ServerConfiguration.JS_CACHING_ENABLED && ServerConfiguration.JS_CACHE_SECONDS != -1l) {
+           conn.getResponse().setHeader("Cache-Control", "max-age=" + String.valueOf(ServerConfiguration.JS_CACHE_SECONDS) + ", public");
+           conn.getResponse().setDateHeader("Expires", System.currentTimeMillis() + (ServerConfiguration.JS_CACHE_SECONDS * 1000));
+        }
         String userAgent = conn.getRequest().getHeader("user-agent");
         if (!ServerConfiguration.ALLOW_IE_COMPRESSION && (userAgent == null || userAgent.indexOf("MSIE") != -1 || gzipContent == null)) {
             // Due to behavior detailed Microsoft Knowledge Base Article Id 312496, 
