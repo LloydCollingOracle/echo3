@@ -34,6 +34,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.Iterator;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
 
@@ -507,7 +508,7 @@ public abstract class WebContainerServlet extends HttpServlet {
         response.getWriter().write("Server Exception. ID: " + exceptionId);
     }
     
-    private Set cssFileNames = new HashSet();
+    private List cssFileNames = new LinkedList();
     
     /**
      * Adds a css file name to be added to the window html.
