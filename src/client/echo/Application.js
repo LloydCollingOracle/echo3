@@ -607,7 +607,25 @@ Echo.Component = Core.extend({
          *  Flag indicating whether component is rendered as a pane (pane components consume available height).
          *  @type Boolean 
          */
-        pane: false
+        pane: false,
+        
+        /**
+         * Method that may focus the next component when requested. Returns
+         * the component if the next focus is set to a new component, returns true
+         * to skip the focus setting.
+         */
+        focusNextComponent: function() {
+        	return null;
+        },
+        
+        /**
+         * Method that may focus the previous component when requested. Returns
+         * the component if the previous focus is set to a new component, returns true
+         * to skip the focus setting.
+         */
+        focusPrevComponent: function() {
+        	return null;
+        }
     },
     
     /**
@@ -1428,6 +1446,23 @@ Echo.FocusManager = Core.extend({
             if (!component) {
                 component = this._application.rootComponent;
             }
+        }
+        
+        // ask the component to focus the next/previous component
+        if (reverse) {
+        	var pc = component.focusPrevComponent();
+        	if (pc != null) {
+        		return pc;
+        	} else if (pc === true) {
+        		return null;
+        	}
+        } else {
+        	var pc = component.focusNextComponent();
+        	if (pc != null) {
+        		return pc;
+        	} else if (pc === true) {
+        		return null;
+        	}
         }
         
         // If a specific next focusable component has been specified, attempt to focus it.
