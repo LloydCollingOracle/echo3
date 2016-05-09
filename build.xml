@@ -633,7 +633,7 @@
     </target>
 
     <target name="jslint.echo" unless="skip.tests">
-        <java fork="true" jar="${dir.resource.jslint}/rhino.jar" failonerror="true">
+        <java fork="true" jar="${dir.resource.jslint}/rhino.jar" failonerror="false">
             <arg value="${dir.resource.jslint}/jslint.js"/>
             <arg value="${dir.src.client.echo}/"/>
         </java>

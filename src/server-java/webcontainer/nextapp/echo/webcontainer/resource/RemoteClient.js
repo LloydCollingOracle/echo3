@@ -546,10 +546,11 @@ Echo.RemoteClient = Core.extend(Echo.Client, {
             } else {
                 this._clientMessage.storeProperty(e.parent.renderId, e.propertyName, e.newValue);
             }
-            if (!this._transactionInProgress) {
+        	// as the input restriction covers the whole page, we don't want to send a message to the server whenever any client property changes!
+            /*if (!this._transactionInProgress) {
                 // has an asynchronous update (e.g: timer periodically set a property)
                 Core.Web.Scheduler.update(this._asyncUpdatesHandler, true);
-            }
+            }*/
         }
     },
 

@@ -595,7 +595,7 @@ private long nextId;
      */
     void notifyComponentPropertyChange(Component parent, String propertyName, Object oldValue, Object newValue) {
         // Ensure current thread is a user interface thread.
-        if (Window.getActive() == null) {
+        if (Window.getActive() == null && !(parent == this && LAST_ENQUEUE_TASK_PROPERTY.equals(propertyName))) {
             throw new IllegalStateException(
                     "Attempt to update state of application user interface outside of user interface thread.");
         // if the application instance is null, we're in weird territory (or unit tests)

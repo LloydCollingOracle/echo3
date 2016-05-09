@@ -366,10 +366,12 @@ Echo.Render = {
         Echo.Render._disposedComponents = null;
         
         // Inform UpdateManager that updates from current invocation have been completed.
-        for (var k in updates) {
-            if (updates[k] != null) {
-                updates[k].markAsProcessed();
+        for (k = 0; k < updates.length; ++k) {
+            if (updates[k] == null || updates[k].isProcessed()) {
+                // Skip removed updates.
+                continue;
             }
+            updates[k].markAsProcessed();
         }
         updateManager.purge();
         

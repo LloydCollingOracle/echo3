@@ -432,6 +432,7 @@ class OutputProcessor {
                 if (j > 0) {
                     out.append(",");
                 }
+                j++;
                 out.append(renderId);
                 removedIdSet.add(renderId);
             }
