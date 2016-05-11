@@ -435,15 +435,33 @@ Echo.RemoteClient = Core.extend(Echo.Client, {
     },
     
     _handleNetworkError: function() {
-        var element = this.domainElement;
-        try {
-            this.dispose();
-        } finally {
-            // Display error.
-            this.displayError(element, this.configuration["NetworkError.Message"], null, 
-                    this.configuration["Action.Continue"], function() {
-                window.location.reload();
-            }, Echo.Client.STYLE_MESSAGE);
+
+    	// if possible, show an alert asking the user if we should re-try and only go to an 
+    	// error page if the user clicks cancel
+        if (this._showNextNetworkOutageMsg) {
+        	this._showNextNetworkOutageMsg = false;
+        	var confirmSyncOutage = confirm(networkOutageMsg);
+        	// reset the _showNextNetworkOutageMsg flag once user clicks OK on the alert box
+        	// and sync the last client message again
+        	if (confirmSyncOutage === true) {
+        		this._showNextNetworkOutageMsg = true;
+        		this._clientMessage = this._lastClientMessage;
+        		Core.Web.Scheduler.run(Core.method(this, this.sync));
+        	} else {
+        		this.fail(this.configuration["NetworkError.Message"]);
+        	}
+        } else {
+        	// fallback to core Echo implementation that will just reload the window
+	        var element = this.domainElement;
+	        try {
+	            this.dispose();
+	        } finally {
+	            // Display error.
+	            this.displayError(element, this.configuration["NetworkError.Message"], null, 
+	                    this.configuration["Action.Continue"], function() {
+	                window.location.reload();
+	            }, Echo.Client.STYLE_MESSAGE);
+	        }
         }
     },
     
