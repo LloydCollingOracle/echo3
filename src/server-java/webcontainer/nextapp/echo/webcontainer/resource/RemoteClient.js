@@ -162,6 +162,11 @@ Echo.RemoteClient = Core.extend(Echo.Client, {
      * MethodRunnable that handle client async property updates.
      */
     _asyncUpdatesHandler: null,
+    
+    /**
+     * When the window is shutting down or closing we won't perform any server calls
+     */
+    windowClosing: false,
 
     /**
      * Creates a new RemoteClient instance.
@@ -727,6 +732,10 @@ Echo.RemoteClient = Core.extend(Echo.Client, {
             throw new Error("Attempt to invoke client/server synchronization while another transaction is in progress; " + 
                     "event data: componentId=" + this._clientMessage._eventComponentId + " eventType=" + 
                     this._clientMessage._eventType + " eventData=" + this._clientMessage._eventData);  
+        }
+        if (this.windowClosing === true) {
+        	Core.Debug.consoleWrite("Client/server synchronization not being performed as window is closing");
+        	return;
         }
         
         this._clientFocusedComponent = this.application ? this.application.getFocusedComponent() : null;

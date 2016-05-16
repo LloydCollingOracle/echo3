@@ -45,7 +45,7 @@ import nextapp.echo.webcontainer.util.Resource;
  * A service which renders <code>JavaScript</code> resource files.
  */
 public class JavaScriptService 
-implements Service {
+implements StringVersionService {
     /**
      * Creates a new <code>JavaScript</code> service from the specified
      * resource in the <code>CLASSPATH</code>.

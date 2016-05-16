@@ -7,6 +7,7 @@ Echo.RemoteClient.CommandExec.BrowserCloseWindow = Core.extend(Echo.RemoteClient
         
         /** @see Echo.RemoteClient.CommandExecProcessor#execute */
         execute: function(client, commandData) {
+            client.windowClosing = true;
             window.close();
         }
      },

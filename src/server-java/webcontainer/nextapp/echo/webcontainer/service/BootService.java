@@ -45,7 +45,7 @@ public class BootService {
     private static final String JS_RESOURCE_PATH = "nextapp/echo/webcontainer/resource/";
     
     /** The singleton instance. */
-    public static final Service SERVICE;
+    public static final StringVersionService SERVICE;
 
     static {
         List resourceList = new ArrayList();

@@ -159,6 +159,15 @@ public class InputProcessor {
         }
         Window.setActive(appInstance.getWindow(clientMessage.getApplicationWindowId()));
         if (Window.getActive() == null) {
+            if (ServerConfiguration.DEBUG_PRINT_MESSAGES_TO_CONSOLE) {
+                try {
+	                System.err.println("======== Invalid Window Request ========");
+	                DomUtil.save(clientMessage.getDocument(), System.err, DomUtil.OUTPUT_PROPERTIES_INDENT);
+	                System.err.println();
+                } catch (SAXException ex) {
+                    Log.log("Cannot render XML sync message to console.", ex);
+                }
+            }
             throw new RuntimeException("Request received for unknown window: " + clientMessage.getApplicationWindowId());
         }
                 
