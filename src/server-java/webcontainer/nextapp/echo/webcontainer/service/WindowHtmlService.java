@@ -258,7 +258,7 @@ implements Service {
                 Element linkElement = document.createElement("link");
                 linkElement.setAttribute("rel", "StyleSheet");
                 linkElement.setAttribute("type", "text/css");
-                linkElement.setAttribute("href", styleSheetService);
+                linkElement.setAttribute("href", resolveCSSLink(styleSheetService));
                 headElement.appendChild(linkElement);
             }
         }
@@ -340,4 +340,12 @@ implements Service {
         return networkOutageMsg;
     }
 
+    /**
+     * Stub method to allow for bespoke CSS File URL resolvers in overriding classes.
+     * @param cssFilename
+     * @return
+     */
+    protected String resolveCSSLink(final String cssFilename){
+        return cssFilename;
+    }
 }
