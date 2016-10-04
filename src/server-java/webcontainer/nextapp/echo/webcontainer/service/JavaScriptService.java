@@ -242,7 +242,7 @@ implements StringVersionService {
      */
     private void serviceGZipCompressed(Connection conn) 
     throws IOException {
-        conn.getResponse().setContentType("text/plain");
+        conn.getResponse().setContentType("application/javascript");
         conn.getResponse().setHeader("Content-Encoding", "gzip");
         conn.getOutputStream().write(gzipContent);
     }
@@ -254,7 +254,7 @@ implements StringVersionService {
      */
     private void servicePlain(Connection conn) 
     throws IOException {
-        conn.getResponse().setContentType("text/plain");
+        conn.getResponse().setContentType("application/javascript");
         conn.getWriter().print(content);
     }
 }
